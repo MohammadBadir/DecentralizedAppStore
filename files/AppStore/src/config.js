@@ -1,7 +1,7 @@
 
-export const APP_STORE_ADDRESS = '0x5DC7CA993971DA8Df0eAD3b2db5b3a9cea0a799C'
+export const APP_STORE_ADDRESS = '0x3E3526674Ca1Ef37D16062366e6cF6a96b921E6B'
 
-export const APP_STORE_ABI = [
+export const APP_STORE_ABI =  [
   {
     "inputs": [],
     "payable": false,

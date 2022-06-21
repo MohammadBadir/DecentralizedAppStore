@@ -36,7 +36,30 @@
     transform: rotate(360deg);
   }
 }
+#root{
+  margin-left: 10px;
+}
 
-.myaccount{
-  color: red;
+#topBar{
+  background-color: lightgray; 
+  margin-left: 10px;
+}
+
+#topBar-background{
+  background-color: lightgray; 
+  margin-left: -10px;
+}
+.topButtons{
+  margin: 2px;
+  display: inline-block;
+}
+
+#appName{
+  display: inline-block;
+  margin-right: 20px;
+}
+
+#accountNumber{
+  margin-left: 410px;
+
 }

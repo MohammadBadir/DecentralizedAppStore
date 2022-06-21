@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react';
 import React from 'react';
 import Web3 from 'web3';
+import './App.css'
 import { APP_STORE_ABI, APP_STORE_ADDRESS } from './config';
+import TopBar from './TopBar.js';
+import AllApps from './AllApps.js';
+import MyApps from './MyApps.js';
+import DownloadedApps from './DownloadedApps.js';
+import UploadApp from './uploadApp.js';
+
+
 
 
 class App extends React.Component {
@@ -9,6 +16,7 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state={
+      currentView: 0,
       account : "",
       appStoreContract : [],
       apps :[],
@@ -55,28 +63,44 @@ class App extends React.Component {
     document.getElementById("developerNameInput").value='';
   }
 
+  changeView=(event)=>{
+    const newViewIndex=event.target.dataset.index;
+    this.setState({
+      currentView : newViewIndex,
+    })
+
+  }
+
   render(){
-    return (
-      <div style={{margin: "10px"}}> 
-        Your account is: {this.state.account}
-        <h1 style={{color: "blue"}}>Apps</h1>
-        <input placeholder='enter app name' id='appNameInput'/>
-        <input placeholder='enter developer name' id='developerNameInput'  style={{marginLeft: "5px"}}/>
-        <button onClick={this.addNewApp} style={{marginLeft: "5px"}} >upload app</button>
-        <div> Number of Apps : {this.state.appsCount}</div>
-        <hr style={{margin: "10px"}}/>
-        <ul>
-        {
-          Object.keys(this.state.apps).map((name, index) => (
-            <li key={`${this.state.apps[index].appName}-${index}`}>
-              <h4>{this.state.apps[index].appName}</h4>
-              <span><b>developer : </b>{this.state.apps[index].appDeveloper}</span>
-            </li>
-          ))
-        }
-        </ul>
-      </div>
-    );
+    if(this.state.currentView==0){
+       return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <AllApps appsCount={this.state.appsCount} apps={this.state.apps} changeView={this.changeView}/>
+        </div>
+       );
+    }else if(this.state.currentView==1){
+      return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <MyApps/>
+        </div>
+       );
+    }else if(this.state.currentView==2){
+      return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <DownloadedApps/>
+        </div>
+       );
+    }else if(this.state.currentView==3){
+      return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <UploadApp addNewApp={this.addNewApp}/>
+        </div>
+       );
+    }
   }
 }
 
