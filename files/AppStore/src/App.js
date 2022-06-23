@@ -50,7 +50,7 @@ class App extends React.Component {
     load();
   }
 
- addNewApp = async ()=>{
+ addNewApp = async (event)=>{
     const appName=document.getElementById("appNameInput").value;
     const developerName=document.getElementById("developerNameInput").value;
     await this.state.appStoreContract.methods.createApp(appName,developerName).send({from : this.state.account});
@@ -61,6 +61,7 @@ class App extends React.Component {
     }))
     document.getElementById("appNameInput").value='';
     document.getElementById("developerNameInput").value='';
+    event.preventDefault();
   }
 
   changeView=(event)=>{

@@ -60,6 +60,21 @@
 }
 
 #accountNumber{
-  margin-left: 410px;
+  margin-left: 410px; 
+}
 
+label,input,select,textarea{
+  display: block;
+}
+
+input,select,textarea{
+  margin-top: 7px;
+}
+
+label{
+  margin-bottom: 20px;
+}
+form{
+  margin-top: 10px;
+  margin-left: 10px;
 }
