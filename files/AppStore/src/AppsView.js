@@ -1,6 +1,7 @@
 import React from 'react';
 import Web3 from 'web3';
 import Grid from '@mui/material/Grid';
+import  dappImg from "./dapp.png";
 
 class AppsView extends React.Component{
 
@@ -23,15 +24,22 @@ class AppsView extends React.Component{
               )
               }
               </div>
-              <Grid id="appsGrid" container spacing={3} rowSpacing={5}>
+              <Grid id="appsGrid" container spacing={1} rowSpacing={1} style={{marginTop:"35px"}}>
               {
                 this.props.apps.filter( 
                   (app)=>{
                   return (this.state.categoryView=="All" || app.category==this.state.categoryView)
                 }).map((app, index) => (
                   <Grid key={`${app.appName}-${index}`} item xs={4}>
-                    <b  style={{fontSize:"18px"}}>{app.appName}</b><br/>
-                    <span style={{fontSize:"14px"}}>{app.category}</span>
+                    <div style={{display:"inline-block",verticalAlign:"top"}}>
+                      <img src={dappImg} width={120}height={120} alt='Large Pizza'/>
+                    </div>
+                    <div style={{display:"inline-block",marginTop:"30px"}}>
+                      <b  style={{fontSize:"18px"}}>{app.appName}</b><br/>
+                     <span style={{fontSize:"14px"}}>{app.category}</span>
+                    </div>
+
+
                   </Grid>
                 ))
               }
@@ -39,14 +47,13 @@ class AppsView extends React.Component{
             </div>
          );
     }
+    
     changeCategoryView = (event) => {
       const category=event.target.dataset.category
       this.setState({
         categoryView : category
       });
     }
-
-
   }
 
   export default AppsView;

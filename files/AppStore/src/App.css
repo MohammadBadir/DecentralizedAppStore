@@ -43,6 +43,7 @@
 #topBar{
   background-color: lightgray; 
   margin-left: 15px;
+  margin-top: -10px;
 }
 
 #topBar-background{

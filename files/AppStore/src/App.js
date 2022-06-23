@@ -74,7 +74,7 @@ class App extends React.Component {
        return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <AppsView categories={this.categories} apps={this.state.apps}/>
+             <AppsView appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
         </div>
        );
     }else if(this.state.currentView==1){
