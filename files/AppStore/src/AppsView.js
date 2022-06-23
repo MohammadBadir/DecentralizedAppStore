@@ -2,6 +2,7 @@ import React from 'react';
 import Web3 from 'web3';
 import Grid from '@mui/material/Grid';
 import  dappImg from "./dapp.png";
+import { TextField } from '@mui/material';
 
 class AppsView extends React.Component{
 
@@ -9,9 +10,15 @@ class AppsView extends React.Component{
     super(props);
     this.state={
       categoryView : "All",
+      searchedApp : "",
     };
   }
 
+  searchChange =(event)=>{
+    this.setState({
+      searchedApp:event.target.value
+    })
+  }
     render(){
       return (
             <div> 
@@ -19,17 +26,22 @@ class AppsView extends React.Component{
               <button key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
               {
               this.props.categories.map((category,index)=>(
-                <button key={category} data-category={category} onClick={this.changeCategoryView} style={{marginRight:"15px"}}>{category}</button>
+                <button key={category} data-category={category} onClick={this.changeCategoryView} style={{display:"inline-block",marginRight:"15px"}}>{category}</button>
               )
               )
               }
+              <input onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search' style={{display:"inline-block", marginLeft:"100px",width:"200px"}}/>
               </div>
               <Grid id="appsGrid" container spacing={1} rowSpacing={1} style={{marginTop:"35px"}}>
               {
                 this.props.apps.filter( 
                   (app)=>{
                   return (this.state.categoryView=="All" || app.category==this.state.categoryView)
-                }).map((app, index) => (
+                }).filter(
+                  (app)=>{
+                    return app.appName.includes(this.state.searchedApp)
+                  }
+                ).map((app, index) => (
                   <Grid key={`${app.appName}-${index}`} item xs={4}>
                     <div style={{display:"inline-block",verticalAlign:"top"}}>
                       <img src={dappImg} width={120}height={120} alt='Large Pizza'/>
