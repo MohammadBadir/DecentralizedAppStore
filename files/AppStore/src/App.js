@@ -3,10 +3,10 @@ import Web3 from 'web3';
 import './App.css'
 import { APP_STORE_ABI, APP_STORE_ADDRESS } from './config';
 import TopBar from './TopBar.js';
-import AllApps from './AllApps.js';
+import AppsView from './AppsView.js';
 import MyApps from './MyApps.js';
 import DownloadedApps from './DownloadedApps.js';
-import UploadApp from './uploadApp.js';
+import UploadApp from './UploadApp.js';
 
 
 
@@ -15,13 +15,13 @@ class App extends React.Component {
 
   constructor(props){
     super(props);
+
+    this.categories=["Education", "Entertainment", "News", "Sports", "Music", "Shopping", "Business"];
     this.state={
-      currentView: 0,
+      currentView: 0, // apps=0,myapps=1,deownloaded=2,uploadapp=3...
       account : "",
       appStoreContract : [],
       apps :[],
-      appNameInput : "",
-      developerNameInput : "",
       appsCount : 0 
     };
 
@@ -50,18 +50,15 @@ class App extends React.Component {
     load();
   }
 
- addNewApp = async (event)=>{
-    const appName=document.getElementById("appNameInput").value;
-    const developerName=document.getElementById("developerNameInput").value;
-    await this.state.appStoreContract.methods.createApp(appName,developerName).send({from : this.state.account});
+ addNewApp = async (appName,appCategory,AppDescription,appDeveloper)=>{
+
+    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appDeveloper).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
+
     this.setState(oldState => ({
       apps : [...oldState.apps,newApp],
       appsCount : oldState.appsCount+1 
     }))
-    document.getElementById("appNameInput").value='';
-    document.getElementById("developerNameInput").value='';
-    event.preventDefault();
   }
 
   changeView=(event)=>{
@@ -77,7 +74,7 @@ class App extends React.Component {
        return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <AllApps appsCount={this.state.appsCount} apps={this.state.apps} changeView={this.changeView}/>
+             <AppsView categories={this.categories} apps={this.state.apps}/>
         </div>
        );
     }else if(this.state.currentView==1){
@@ -98,7 +95,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <UploadApp addNewApp={this.addNewApp}/>
+             <UploadApp categories={this.categories} addNewApp={this.addNewApp}/>
         </div>
        );
     }

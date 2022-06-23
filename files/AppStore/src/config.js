@@ -1,7 +1,7 @@
 
-export const APP_STORE_ADDRESS = '0x3E3526674Ca1Ef37D16062366e6cF6a96b921E6B'
+export const APP_STORE_ADDRESS = '0xA05888268684938E2465f7CA68900D2E10e70198'
 
-export const APP_STORE_ABI =  [
+export const APP_STORE_ABI = [
   {
     "inputs": [],
     "payable": false,
@@ -27,6 +27,16 @@ export const APP_STORE_ABI =  [
       {
         "internalType": "string",
         "name": "appName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "category",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "appDescription",
         "type": "string"
       },
       {
@@ -60,6 +70,16 @@ export const APP_STORE_ABI =  [
       {
         "internalType": "string",
         "name": "_appName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_category",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_appDescription",
         "type": "string"
       },
       {

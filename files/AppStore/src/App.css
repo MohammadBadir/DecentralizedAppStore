@@ -42,7 +42,7 @@
 
 #topBar{
   background-color: lightgray; 
-  margin-left: 10px;
+  margin-left: 15px;
 }
 
 #topBar-background{
@@ -60,7 +60,7 @@
 }
 
 #accountNumber{
-  margin-left: 410px; 
+  margin-left: 400px; 
 }
 
 label,input,select,textarea{
@@ -75,6 +75,11 @@ label{
   margin-bottom: 20px;
 }
 form{
-  margin-top: 10px;
-  margin-left: 10px;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+#appsGrid{
+  margin-top: 1px;
+  margin-left: 40px;
 }
