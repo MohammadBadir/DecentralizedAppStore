@@ -35,8 +35,8 @@ class UploadApp extends React.Component{
               </label>
 
               <label>
-                <b>App bundle</b>
-                <input type="file" id='developerNameInput'/>
+                <b>App logo</b>
+                <input type="file" id='appLogoInput'/>
               </label>
 
                <input type="submit" value="Upload" />
