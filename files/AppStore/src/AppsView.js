@@ -47,9 +47,9 @@ class AppsView extends React.Component{
                       <img src={dappImg} width={120}height={120}/>
                     </div>
                     <div style={{display:"inline-block",marginTop:"25px"}}>
-                      <b  style={{fontSize:"18px"}}>{app.appName}</b><br/>
-                     <span style={{fontSize:"14px"}}>{app.category}</span><br/>
-                     <button data-appid={app.id} key={app.id} onClick={this.downloadApp} style={{marginTop:"3px"}}>Download</button>
+                      <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
+                      <span style={{fontSize:"14px"}}>{app.category}</span><br/>
+                      <button data-appid={app.id} key={app.id} onClick={this.downloadApp} style={{marginTop:"3px"}}>Download</button>
                     </div>
                   </Grid>
                 ))

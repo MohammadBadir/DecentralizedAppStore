@@ -23,6 +23,7 @@ class App extends React.Component {
       appStoreContract : [],
       apps :[],
       downloadedApps:[],
+      uploadedApps:[],
       appsCount : 0 
     };
 
@@ -59,6 +60,19 @@ class App extends React.Component {
       this.setState({
         downloadedApps : [...downloadedAppsTemp]
       });
+
+      let myUploadedApps = await contract.methods.getUploadedApps(this.state.account).call();
+      let uploadedAppsTemp=[];
+      let iter=0;
+      while(myUploadedApps[iter]!=undefined){
+        const app = await contract.methods.apps(myUploadedApps[iter]).call();
+        uploadedAppsTemp=[...uploadedAppsTemp,app]
+        iter++;
+      }
+      this.setState({
+        uploadedApps : [...uploadedAppsTemp]
+      });
+
       }
     load();
   }
@@ -76,7 +90,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <MyApps/>
+             <MyApps uploadedApps={this.state.uploadedApps}/>
         </div>
        );
     }else if(this.state.currentView==2){
@@ -90,7 +104,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <UploadApp categories={this.categories} addNewApp={this.addNewApp}/>
+             <UploadApp categories={this.categories} addNewApp={this.addNewApp} uploadedApps={this.state.uploadedApps}/>
         </div>
        );
     }
@@ -99,12 +113,13 @@ class App extends React.Component {
 
   addNewApp = async (appName,appCategory,AppDescription,appDeveloper)=>{
 
-    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appDeveloper).send({from : this.state.account});
+    await this.state.appStoreContract.methods.createApp(this.state.account,appName,appCategory,AppDescription,appDeveloper).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
 
     this.setState(oldState => ({
       apps : [...oldState.apps,newApp],
-      appsCount : oldState.appsCount+1 
+      appsCount : oldState.appsCount+1,
+      uploadedApps : [...oldState.uploadedApps,newApp]
     }))
   }
 

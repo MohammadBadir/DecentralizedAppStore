@@ -1,7 +1,7 @@
 
-export const APP_STORE_ADDRESS = '0xeD1d60857e97BDc6424f687a757E8acf92A02bF7'
+export const APP_STORE_ADDRESS = '0x1dAFFB3aBD7F4485697EaB390BA17CC3D4D6979D'
 
-export const APP_STORE_ABI =[
+export const APP_STORE_ABI = [
   {
     "inputs": [],
     "payable": false,
@@ -91,8 +91,39 @@ export const APP_STORE_ABI =[
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "uploadedApps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      },
       {
         "internalType": "string",
         "name": "_appName",
@@ -150,6 +181,27 @@ export const APP_STORE_ABI =[
       }
     ],
     "name": "getDownloadedApps",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "getUploadedApps",
     "outputs": [
       {
         "internalType": "uint256[]",

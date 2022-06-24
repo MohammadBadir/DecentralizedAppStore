@@ -36,7 +36,6 @@ class DownloadedApps extends React.Component{
                     <div style={{display:"inline-block",marginTop:"25px"}}>
                       <b  style={{fontSize:"18px"}}>{app.appName}</b><br/>
                      <span style={{fontSize:"14px"}}>{app.category}</span><br/>
-                     <button style={{marginTop:"3px"}}>Download</button>
                     </div>
                   </Grid>
                 ))
