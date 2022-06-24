@@ -1,7 +1,5 @@
 import React from 'react';
 import Web3 from 'web3';
-import Grid from '@mui/material/Grid';
-import  dappImg from "./dapp.png";
 
 class UploadApp extends React.Component{
 
@@ -16,13 +14,14 @@ class UploadApp extends React.Component{
   }
 
   addNewApp = async (event) =>{
+   event.preventDefault();
     await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.developerNameInput)
-    this.setState=({
+    this.setState({
       appNameInput : "",
       appDescriptionInput : "",
       developerNameInput : "",
     });
-    event.preventDefault();
+    alert('app has been uploaded successfully')
   }
 
    render(){
