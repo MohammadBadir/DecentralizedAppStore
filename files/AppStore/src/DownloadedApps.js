@@ -22,7 +22,7 @@ class DownloadedApps extends React.Component{
       return (
         <div style={{marginTop:"15px"}}>
           <input onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search' style={{display:"inline-block", marginLeft:"20px",width:"200px"}}/>
-          <Grid id="downloadedAppsGrid" container spacing={1} rowSpacing={1} style={{marginTop:"35px"}}>
+          <Grid className="appsGrid" container spacing={1} rowSpacing={1} style={{marginTop:"35px"}}>
               {
                 this.props.downloadedApps.filter(
                   (app)=>{
@@ -42,7 +42,7 @@ class DownloadedApps extends React.Component{
               }
               </Grid>
         </div>
-         );
+        );
     }
   }
 

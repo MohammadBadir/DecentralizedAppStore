@@ -80,15 +80,7 @@ form{
   margin-left: 15px;
 }
 
-#appsGrid{
-  margin-top: 1px;
-  margin-left: 40px;
-}
-#downloadedAppsGrid{
-  margin-top: 1px;
-  margin-left: 40px;
-}
-#uploadedAppsGrid{
+.appsGrid{
   margin-top: 1px;
   margin-left: 40px;
 }
