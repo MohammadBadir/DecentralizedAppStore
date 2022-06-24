@@ -22,6 +22,7 @@ class App extends React.Component {
       account : "",
       appStoreContract : [],
       apps :[],
+      downloadedApps:[],
       appsCount : 0 
     };
 
@@ -46,11 +47,57 @@ class App extends React.Component {
       this.setState({
         apps : [...appsTemp]
       });
-    }
+
+      let mydownloadedApps = await contract.methods.getDownloadedApps(this.state.account).call();
+      let downloadedAppsTemp=[];
+      let iterator=0;
+      while(mydownloadedApps[iterator]!=undefined){
+        const app = await contract.methods.apps(mydownloadedApps[iterator]).call();
+        downloadedAppsTemp=[...downloadedAppsTemp,app]
+        iterator++;
+      }
+      this.setState({
+        downloadedApps : [...downloadedAppsTemp]
+      });
+      }
     load();
   }
 
- addNewApp = async (appName,appCategory,AppDescription,appDeveloper)=>{
+
+  render(){
+    if(this.state.currentView==0){
+       return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <AppsView  downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
+        </div>
+       );
+    }else if(this.state.currentView==1){
+      return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <MyApps/>
+        </div>
+       );
+    }else if(this.state.currentView==2){
+      return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <DownloadedApps downloadedApps={this.state.downloadedApps}/>
+        </div>
+       );
+    }else if(this.state.currentView==3){
+      return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <UploadApp categories={this.categories} addNewApp={this.addNewApp}/>
+        </div>
+       );
+    }
+  }
+
+
+  addNewApp = async (appName,appCategory,AppDescription,appDeveloper)=>{
 
     await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appDeveloper).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
@@ -66,39 +113,14 @@ class App extends React.Component {
     this.setState({
       currentView : newViewIndex,
     })
-
   }
 
-  render(){
-    if(this.state.currentView==0){
-       return (
-        <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
-             <AppsView appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
-        </div>
-       );
-    }else if(this.state.currentView==1){
-      return (
-        <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
-             <MyApps/>
-        </div>
-       );
-    }else if(this.state.currentView==2){
-      return (
-        <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
-             <DownloadedApps/>
-        </div>
-       );
-    }else if(this.state.currentView==3){
-      return (
-        <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
-             <UploadApp categories={this.categories} addNewApp={this.addNewApp}/>
-        </div>
-       );
-    }
+  downloadApp = async (appId) =>{
+    await this.state.appStoreContract.methods.downloadApp(this.state.account,appId).send({from : this.state.account});
+    const app = await this.state.appStoreContract.methods.apps(appId).call();
+    this.setState(oldState=>({
+      downloadedApps : [...oldState.downloadedApps,app]
+    }))
   }
 }
 

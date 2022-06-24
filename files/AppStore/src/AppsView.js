@@ -44,14 +44,13 @@ class AppsView extends React.Component{
                 ).map((app, index) => (
                   <Grid key={`${app.appName}-${index}`} item xs={4}>
                     <div style={{display:"inline-block",verticalAlign:"top"}}>
-                      <img src={dappImg} width={120}height={120} alt='Large Pizza'/>
+                      <img src={dappImg} width={120}height={120}/>
                     </div>
-                    <div style={{display:"inline-block",marginTop:"30px"}}>
+                    <div style={{display:"inline-block",marginTop:"25px"}}>
                       <b  style={{fontSize:"18px"}}>{app.appName}</b><br/>
-                     <span style={{fontSize:"14px"}}>{app.category}</span>
+                     <span style={{fontSize:"14px"}}>{app.category}</span><br/>
+                     <button data-appid={app.id} key={app.id} onClick={this.downloadApp} style={{marginTop:"3px"}}>Download</button>
                     </div>
-
-
                   </Grid>
                 ))
               }
@@ -59,7 +58,10 @@ class AppsView extends React.Component{
             </div>
          );
     }
-    
+    downloadApp = async(event)=>{
+      await this.props.downloadApp(event.target.dataset.appid)
+    }
+
     changeCategoryView = (event) => {
       const category=event.target.dataset.category
       this.setState({
