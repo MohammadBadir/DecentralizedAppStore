@@ -13,15 +13,16 @@ contract AppStore {
   }
   
   constructor() public {
-    createApp('candy crush', "Entertainment", "good game", 'waseem');
   }
   
   mapping(uint => AppData) public apps;
   mapping(address  => uint[]) public downloadedApps;
+  mapping(address  => uint[]) public uploadedApps;
 
-  function createApp(string memory _appName,string memory _category,string memory _appDescription, string memory _developerName) public {
+  function createApp(address  _address,string memory _appName,string memory _category,string memory _appDescription, string memory _developerName) public {
     appsCount++;
     apps[appsCount] = AppData(appsCount, _appName, _category, _appDescription, _developerName);
+    uploadedApps[_address].push(appsCount);
   }
 
     function downloadApp(address  _address,uint appId) public{
@@ -30,6 +31,9 @@ contract AppStore {
 
   function getDownloadedApps(address  _address) public returns(uint[] memory){
     return downloadedApps[_address];
+  }
+    function getUploadedApps(address  _address) public returns(uint[] memory){
+    return uploadedApps[_address];
   }
 
 }
