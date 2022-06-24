@@ -23,14 +23,14 @@ class AppsView extends React.Component{
       return (
             <div> 
               <div style={{marginTop:"15px",marginLeft:"15px"}}>
-              <button key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
+              <button className="categoryButtons" key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
               {
               this.props.categories.map((category,index)=>(
-                <button key={category} data-category={category} onClick={this.changeCategoryView} style={{display:"inline-block",marginRight:"15px"}}>{category}</button>
+                <button className="categoryButtons" key={category} data-category={category} onClick={this.changeCategoryView} style={{display:"inline-block",marginRight:"15px"}}>{category}</button>
               )
               )
               }
-              <input onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search' style={{display:"inline-block", marginLeft:"100px",width:"200px"}}/>
+              <input className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
               </div>
               <Grid id="appsGrid" container spacing={1} rowSpacing={1} style={{marginTop:"35px"}}>
               {
@@ -60,6 +60,7 @@ class AppsView extends React.Component{
     }
     downloadApp = async(event)=>{
       await this.props.downloadApp(event.target.dataset.appid)
+      alert('app has been downloaded successfully')
     }
 
     changeCategoryView = (event) => {

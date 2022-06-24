@@ -128,6 +128,13 @@ class App extends React.Component {
     this.setState({
       currentView : newViewIndex,
     })
+    var elements = document.getElementsByClassName('topButtons'); 
+    for(var i = 0; i < elements.length; i++){
+      elements[i].style.color = "white";
+      elements[i].style.backgroundColor = 'rgb(111,109,227)';
+    }
+    event.target.style.color='rgb(40,44,52)'
+    event.target.style.backgroundColor='rgb(243,244,246)'
   }
 
   downloadApp = async (appId) =>{

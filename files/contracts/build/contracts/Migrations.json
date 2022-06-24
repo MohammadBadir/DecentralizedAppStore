@@ -915,12 +915,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x4b8F9CEfcA5f8DbaEA5B31f004BB008A405254D4",
-      "transactionHash": "0xf5212fb79d7f8069cb9dbdf73e6d5069eff94a75f950b6ebf7fd55e018740551"
+      "address": "0x5935E592CC9679941b1ACB889Ce62fAd5A11dEe1",
+      "transactionHash": "0x97985f57315fbb8f5e45b67b0ac020e2b25ee53ffea1cc0099a1fec3e35544bb"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-06-24T14:44:27.404Z",
+  "updatedAt": "2022-06-24T18:29:03.980Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}
