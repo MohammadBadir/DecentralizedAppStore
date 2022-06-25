@@ -270,3 +270,10 @@ form{
 .submitButtons:hover {
   border-color: #a2a6ac #979aa1 #82858a;
 }
+
+.appCard:hover{
+  background-color: #f7f8f9;
+}
+
+
+

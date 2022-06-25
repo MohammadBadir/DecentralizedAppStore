@@ -1,8 +1,12 @@
 import React from 'react';
 import Web3 from 'web3';
 import Grid from '@mui/material/Grid';
-import  dappImg from "./dapp.png";
+import  dappImg from "./dapp.jpg";
 import { TextField } from '@mui/material';
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
 
 class AppsView extends React.Component{
 
@@ -32,7 +36,7 @@ class AppsView extends React.Component{
               }
               <input className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
               </div>
-              <Grid id="appsGrid" container spacing={1} rowSpacing={1} style={{marginTop:"35px"}}>
+              <Grid className="appsGrid" container spacing={5} rowSpacing={8} columnSpacing={0} style={{marginTop:"10px",marginLeft:"10px"}}>
               {
                 this.props.apps.filter( 
                   (app)=>{
@@ -42,15 +46,19 @@ class AppsView extends React.Component{
                     return app.appName.includes(this.state.searchedApp)
                   }
                 ).map((app, index) => (
-                  <Grid key={`${app.appName}-${index}`} item xs={4}>
+                  <Grid  key={`${app.appName}-${index}`} item xs={4}>
+                  <Card style={{height:"65px", width:"300px",padding:"10px", border: "none", boxShadow: "none" }}className="appCard" onClick={()=>{alert('hi')}}>
                     <div style={{display:"inline-block",verticalAlign:"top"}}>
-                      <img src={dappImg} width={120}height={120}/>
+                      <img src={dappImg} width={50}height={52}/>
                     </div>
-                    <div style={{display:"inline-block",marginTop:"25px"}}>
+                    <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",}}>
                       <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
                       <span style={{fontSize:"14px"}}>{app.category}</span><br/>
-                      <button data-appid={app.id} key={app.id} onClick={this.downloadApp} style={{marginTop:"3px"}}>Download</button>
                     </div>
+                    <div style={{display:"inline-block",verticalAlign:"top",marginTop:"5px",marginLeft:"20px"}}>
+                        <button className="downloadButton" data-appid={app.id} key={app.id} onClick={this.downloadApp} >Download</button>
+                    </div>
+                    </Card>
                   </Grid>
                 ))
               }
