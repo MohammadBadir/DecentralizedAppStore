@@ -52,9 +52,10 @@ class AppsView extends React.Component{
                     <div style={{display:"inline-block",verticalAlign:"top"}}>
                       <img src={dappImg} width={50}height={52}/>
                     </div>
-                    <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",}}>
+                    <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",marginTop:"-8px"}}>
                       <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
                       <span style={{fontSize:"14px"}}>{app.category}</span><br/>
+                      <span style={{fontSize:"14px",color:"darkorange"}}>4.5</span>
                     </div>
                     <div style={{pointerEvents:"auto", display:"inline-block",verticalAlign:"top",marginTop:"5px",marginLeft:"20px"}}>
                         <button className="downloadButton" data-appid={app.id} key={app.id} onClick={this.downloadApp} >Download</button>
