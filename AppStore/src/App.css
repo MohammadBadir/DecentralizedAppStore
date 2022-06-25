@@ -273,6 +273,7 @@ form{
 
 .appCard:hover{
   background-color: #f7f8f9;
+  cursor: pointer;
 }
 
 

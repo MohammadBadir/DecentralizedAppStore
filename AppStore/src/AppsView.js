@@ -2,11 +2,11 @@ import React from 'react';
 import Web3 from 'web3';
 import Grid from '@mui/material/Grid';
 import  dappImg from "./dapp.jpg";
-import { TextField } from '@mui/material';
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
+
 
 class AppsView extends React.Component{
 
@@ -34,7 +34,8 @@ class AppsView extends React.Component{
               )
               )
               }
-              <input className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
+              <input  className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
+             
               </div>
               <Grid className="appsGrid" container spacing={5} rowSpacing={8} columnSpacing={0} style={{marginTop:"10px",marginLeft:"10px"}}>
               {
@@ -47,7 +48,7 @@ class AppsView extends React.Component{
                   }
                 ).map((app, index) => (
                   <Grid  key={`${app.appName}-${index}`} item xs={4}>
-                  <Card style={{height:"65px", width:"300px",padding:"10px", border: "none", boxShadow: "none" }}className="appCard" onClick={()=>{alert('hi')}}>
+                  <Card style={{height:"65px", width:"300px",padding:"10px", border: "none", boxShadow: "none" }}className="appCard" onClick={()=>{}}>
                     <div style={{display:"inline-block",verticalAlign:"top"}}>
                       <img src={dappImg} width={50}height={52}/>
                     </div>
@@ -55,7 +56,7 @@ class AppsView extends React.Component{
                       <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
                       <span style={{fontSize:"14px"}}>{app.category}</span><br/>
                     </div>
-                    <div style={{display:"inline-block",verticalAlign:"top",marginTop:"5px",marginLeft:"20px"}}>
+                    <div style={{pointerEvents:"auto", display:"inline-block",verticalAlign:"top",marginTop:"5px",marginLeft:"20px"}}>
                         <button className="downloadButton" data-appid={app.id} key={app.id} onClick={this.downloadApp} >Download</button>
                     </div>
                     </Card>
