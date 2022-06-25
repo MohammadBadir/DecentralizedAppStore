@@ -40,19 +40,18 @@
   margin-left: 10px;
 }
 
-#topBar{
+.topBar{
   background-color: rgb(111, 109, 227); 
   margin-left: 15px;
   margin-top: -10px;
 }
 
-#topBar-background{
+.topBar-background{
   background-color: rgb(111, 109, 227); 
   margin-left: -10px;
 }
 
-#appName{
-  
+.appName{ 
   display: inline-block;
   margin-right: 20px;
 }
@@ -218,6 +217,14 @@ form{
    width:200px;
    height: 28px;
    border-radius: 6px;
+   padding-left: 7px;
+   border: 1px solid lightslategray
+}
+
+#userNameInput{
+   width: 200;
+   height: 28px;
+   border-radius: 6px; 
    padding-left: 7px;
    border: 1px solid lightslategray
 }

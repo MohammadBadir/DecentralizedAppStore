@@ -15,7 +15,7 @@ contract AppStore {
   struct UserData {
     bool isInit;
     string userName;
-    
+  
     string downloadCode;
     uint[] downloadedApps;
     uint[] uploadedApps;
@@ -27,11 +27,18 @@ contract AppStore {
   mapping(uint => AppData) public apps;
   mapping(address  => UserData) public userDictionary;
 
+  function getUserName()public view returns(string memory){
+    return userDictionary[msg.sender].userName;
+  }
 
-  function createApp(string memory _appName,string memory _category,string memory _appDescription, string memory _developerName) public {
+  function createApp(string memory _appName,string memory _category,string memory _appDescription) public {
     appsCount++;
-    apps[appsCount] = AppData(appsCount, _appName, _category, _appDescription, _developerName);
+    apps[appsCount] = AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName);
     userDictionary[msg.sender].uploadedApps.push(appsCount);
+  }
+
+  function updateUserName(string memory userName)public{
+    userDictionary[msg.sender].userName=userName;
   }
 
   function downloadApp(uint appId, string memory newCode) public{

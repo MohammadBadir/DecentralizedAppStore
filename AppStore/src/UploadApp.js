@@ -25,7 +25,7 @@ class UploadApp extends React.Component{
       appNameEmpty:false
     })
    }
-    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,"uhi")
+    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput)
     this.setState({
       appNameInput : "",
       appDescriptionInput : "",
@@ -36,7 +36,7 @@ class UploadApp extends React.Component{
    render(){
       return (
        <div>
-          <form onSubmit={this.addNewApp} style={{size:"50px"}}> 
+          <form onSubmit={this.addNewApp} style={{size:"90px"}}> 
             <label>
               <b>App name</b>      
                 <input  onChange={this.inputChangeHandle} name='appNameInput' id='appNameInput' value={this.state.appNameInput} placeholder='enter app name' size={53}/>

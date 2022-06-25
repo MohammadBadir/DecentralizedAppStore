@@ -7,7 +7,7 @@ import AppsView from './AppsView.js';
 import MyApps from './MyApps.js';
 import DownloadedApps from './DownloadedApps.js';
 import UploadApp from './UploadApp.js';
-
+import FirstTimeScreen from './firstTimeScreen'
 
 
 
@@ -20,12 +20,14 @@ class App extends React.Component {
     this.state={
       currentView: 0, // apps=0,myapps=1,deownloaded=2,uploadapp=3...
       account : "",
+      userName :'',
       appStoreContract : [],
       apps :[],
       downloadedApps:[],
       uploadedApps:[],
       appsCount : 0,
-      downloadCode: "oj"
+      downloadCode: "oj",
+      isFirstTime : true
     };
 
   }
@@ -35,19 +37,26 @@ class App extends React.Component {
       const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
       const accounts = await web3.eth.requestAccounts();
       const contract = new web3.eth.Contract(APP_STORE_ABI, APP_STORE_ADDRESS);
-      const counter = await contract.methods.appsCount().call();
       this.setState({
         account :accounts[0],
         appStoreContract : contract,
-        appsCount : parseInt(counter)
       })
+      let userNameTemp=await contract.methods.getUserName().call();
+      this.setState({
+        isFirstTime :userNameTemp==''? true : false,
+        userName : userNameTemp
+      })
+      if(userNameTemp=='') return;
+
+      const counter = await contract.methods.appsCount().call();
       let appsTemp=[];
       for (var i = 1; i <= counter; i++) {
         const app = await contract.methods.apps(i).call();
         appsTemp=[...appsTemp,app]
       }
       this.setState({
-        apps : [...appsTemp]
+        apps : [...appsTemp],
+        appsCount : parseInt(counter),
       });
 
       //this.downloadCode = "hi";
@@ -89,7 +98,13 @@ class App extends React.Component {
 
 
   render(){
-    if(this.state.currentView==0){
+    if(this.state.isFirstTime){
+      return ( 
+        <div>
+            <FirstTimeScreen updateUserName={this.updateUserName} toggleFirstTime={this.toggleFirstTime}/>
+        </div>
+      )
+    }else if(this.state.currentView==0){
        return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
@@ -121,9 +136,9 @@ class App extends React.Component {
   }
 
 
-  addNewApp = async (appName,appCategory,AppDescription,appDeveloper)=>{
+  addNewApp = async (appName,appCategory,AppDescription)=>{
 
-    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appDeveloper).send({from : this.state.account});
+    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
 
     this.setState(oldState => ({
@@ -156,6 +171,19 @@ class App extends React.Component {
       downloadCode : val,
       downloadedApps : [...oldState.downloadedApps,app]
     }));
+  }
+
+  updateUserName =async (userName) => {
+    this.setState({
+      userName : userName
+    })
+    await this.state.appStoreContract.methods.updateUserName(userName).send({from : this.state.account});
+  }
+
+  toggleFirstTime = ()=>{
+    this.setState({
+      isFirstTime : false
+    })
   }
 }
 
