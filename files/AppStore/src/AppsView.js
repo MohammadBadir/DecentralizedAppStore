@@ -23,7 +23,7 @@ class AppsView extends React.Component{
       return (
             <div> 
               <div style={{marginTop:"15px",marginLeft:"15px"}}>
-              <button className="categoryButtons" key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
+              <button id="defaultCategory" className="categoryButtons" key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
               {
               this.props.categories.map((category,index)=>(
                 <button className="categoryButtons" key={category} data-category={category} onClick={this.changeCategoryView} style={{display:"inline-block",marginRight:"15px"}}>{category}</button>
@@ -68,6 +68,13 @@ class AppsView extends React.Component{
       this.setState({
         categoryView : category
       });
+      var elements = document.getElementsByClassName('categoryButtons'); 
+      for(var i = 0; i < elements.length; i++){
+        elements[i].style.color = "rgb(36, 41, 46)";
+        elements[i].style.backgroundColor = 'rgb(250, 251, 252)';
+      }
+      event.target.style.color='white'
+      event.target.style.backgroundColor='rgb(111, 109, 227)'
     }
   }
 

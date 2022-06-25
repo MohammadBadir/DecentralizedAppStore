@@ -10,11 +10,22 @@ class UploadApp extends React.Component{
       categoryInput : "Education",
       appDescriptionInput : "",
       developerNameInput : "",
+      appNameEmpty : false
     };
   }
 
   addNewApp = async (event) =>{
    event.preventDefault();
+   if(this.state.appNameInput==''){
+    this.setState({
+      appNameEmpty:true
+    })
+    return;
+   }else{
+    this.setState({
+      appNameEmpty:false
+    })
+   }
     await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.developerNameInput)
     this.setState({
       appNameInput : "",
@@ -30,7 +41,8 @@ class UploadApp extends React.Component{
           <form onSubmit={this.addNewApp} style={{size:"50px"}}> 
             <label>
               <b>App name</b>      
-                <input onChange={this.inputChangeHandle} name='appNameInput' id='appNameInput' value={this.state.appNameInput} placeholder='enter app name' size={53}/>
+                <input  onChange={this.inputChangeHandle} name='appNameInput' id='appNameInput' value={this.state.appNameInput} placeholder='enter app name' size={53}/>
+                <span style={{fontSize:"0.8em",color:"red"}}>{this.state.appNameEmpty ?  "* App name cannot be empty." : ""}</span>
               </label>
               <label>
               <b>Category</b>
