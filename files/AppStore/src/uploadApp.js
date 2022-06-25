@@ -9,7 +9,6 @@ class UploadApp extends React.Component{
       appNameInput : "",
       categoryInput : "Education",
       appDescriptionInput : "",
-      developerNameInput : "",
       appNameEmpty : false
     };
   }
@@ -26,11 +25,10 @@ class UploadApp extends React.Component{
       appNameEmpty:false
     })
    }
-    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.developerNameInput)
+    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput)
     this.setState({
       appNameInput : "",
       appDescriptionInput : "",
-      developerNameInput : "",
     });
     alert('app has been uploaded successfully')
   }
@@ -58,11 +56,6 @@ class UploadApp extends React.Component{
               <label>
                 <b>App description</b>
                 <textarea onChange={this.inputChangeHandle} name='appDescriptionInput'  id='appDescriptionInput' value={this.state.appDescriptionInput} rows="5" cols="50"/>
-              </label>
-
-              <label>
-                 <b>Developer name</b>
-                 <input onChange={this.inputChangeHandle} name='developerNameInput'  placeholder='enter developer name' id='developerNameInput' value={this.state.developerNameInput} size={53}/>
               </label>
 
               <label>

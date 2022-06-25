@@ -24,7 +24,8 @@ class App extends React.Component {
       apps :[],
       downloadedApps:[],
       uploadedApps:[],
-      appsCount : 0 
+      appsCount : 0,
+      downloadCode: "oj"
     };
 
   }
@@ -49,6 +50,15 @@ class App extends React.Component {
         apps : [...appsTemp]
       });
 
+      //this.downloadCode = "hi";
+      let dCode = await contract.methods.getDownloadCode(this.state.account).call();
+      //console.log("hey" + dCode);
+      //console.log(this.state.downloadCode+"A");
+      this.setState({
+        downloadCode: dCode
+      });
+      // console.log(this.state.downloadCode+"AA");
+      //console.log(this.downloadCode + "A");
       let mydownloadedApps = await contract.methods.getDownloadedApps(this.state.account).call();
       let downloadedAppsTemp=[];
       let iterator=0;
@@ -138,11 +148,14 @@ class App extends React.Component {
   }
 
   downloadApp = async (appId) =>{
-    await this.state.appStoreContract.methods.downloadApp(this.state.account,appId).send({from : this.state.account});
+    console.log("PRE: " + this.state.downloadCode);
+    let val = this.state.downloadCode + "$" + appId.toString();
+    await this.state.appStoreContract.methods.downloadApp(this.state.account,appId, val).send({from : this.state.account});
     const app = await this.state.appStoreContract.methods.apps(appId).call();
     this.setState(oldState=>({
+      downloadCode : val,
       downloadedApps : [...oldState.downloadedApps,app]
-    }))
+    }));
   }
 }
 

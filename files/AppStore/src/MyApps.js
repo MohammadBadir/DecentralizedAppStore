@@ -17,7 +17,7 @@ class MyApps extends React.Component{
   render(){
     return (
        <div style={{marginTop:"15px"}}>
-        <input className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder=' Search App'/>
+        <input className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
         <Grid className="appsGrid" container spacing={1} rowSpacing={1} style={{marginTop:"35px"}}>
             {
             this.props.uploadedApps.filter(

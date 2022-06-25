@@ -1,5 +1,5 @@
 
-export const APP_STORE_ADDRESS = '0x4cd2f8B4D2bf80084b6Fc254D87D6348d8F53776'
+export const APP_STORE_ADDRESS = '0x584660dC99Eb9B5a010507A61D416A72AE2d116e'
 
 export const APP_STORE_ABI = [
   {
@@ -71,45 +71,24 @@ export const APP_STORE_ABI = [
         "internalType": "address",
         "name": "",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
-    "name": "downloadedApps",
+    "name": "userDictionary",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "internalType": "bool",
+        "name": "isInit",
+        "type": "bool"
       },
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "uploadedApps",
-    "outputs": [
+        "internalType": "string",
+        "name": "userName",
+        "type": "string"
+      },
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "downloadCode",
+        "type": "string"
       }
     ],
     "payable": false,
@@ -163,6 +142,11 @@ export const APP_STORE_ABI = [
         "internalType": "uint256",
         "name": "appId",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "newCode",
+        "type": "string"
       }
     ],
     "name": "downloadApp",
@@ -172,7 +156,7 @@ export const APP_STORE_ABI = [
     "type": "function"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [
       {
         "internalType": "address",
@@ -189,11 +173,11 @@ export const APP_STORE_ABI = [
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [
       {
         "internalType": "address",
@@ -209,6 +193,47 @@ export const APP_STORE_ABI = [
         "type": "uint256[]"
       }
     ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "getDownloadCode",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "newCode",
+        "type": "string"
+      }
+    ],
+    "name": "updateDownloadCode",
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
