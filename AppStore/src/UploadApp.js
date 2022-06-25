@@ -63,7 +63,7 @@ class UploadApp extends React.Component{
                 <input type="file" id='appLogoInput'/>
               </label>
 
-               <input type="submit" value="Upload" />
+               <input className="submitButtons" type="submit" value="Submit" />
             </form>
 
         </div>

@@ -38,12 +38,12 @@ class FirstTimeScreen extends React.Component{
                  </div>
               </div>
               <form onSubmit={this.userNameEnteredHandle} style={{size:"50px"}}> 
-                <label style={{marginBottom:"10px"}}>
+                <label>
                   <b>Enter a username to proceed:</b><br/>
                     <input  id="userNameInput" onChange={this.inputChangeHandle} name='userNameInput'  value={this.state.userNameInput} placeholder='e.g. wesam' size={40}/>
                     <span style={{fontSize:"0.8em",color:"red"}}>{this.state.userNameEmpty ?  "* username cannot be empty." : ""}</span>
                   </label>
-                   <input type="submit" value="Continue" />
+                   <input className="submitButtons" type="submit" value="Continue" />
                 </form>
             </div>
              );

@@ -69,7 +69,7 @@ input,select,textarea{
 }
 
 label{
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 form{
   margin-top: 15px;
@@ -227,4 +227,46 @@ form{
    border-radius: 6px; 
    padding-left: 7px;
    border: 1px solid lightslategray
+}
+
+
+
+
+.submitButtons {
+  background-image: linear-gradient(#f7f8fa ,#e7e9ec);
+  border-color: #adb1b8 #a2a6ac #8d9096;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  box-shadow: rgba(255,255,255,.6) 0 1px 0 inset;
+  box-sizing: border-box;
+  color: #0f1111;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Amazon Ember",Arial,sans-serif;
+  font-size: 14px;
+  height: 29px;
+  font-size: 13px;
+  outline: 0;
+  overflow: hidden;
+  padding: 0 8px;
+  text-align: center;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.submitButtons:active {
+  border-bottom-color: #a2a6ac;
+}
+
+.submitButtons:active:hover {
+  border-bottom-color: #a2a6ac;
+}
+
+.submitButtons:hover {
+  border-color: #a2a6ac #979aa1 #82858a;
 }
