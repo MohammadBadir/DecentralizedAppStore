@@ -27,31 +27,32 @@ contract AppStore {
   mapping(uint => AppData) public apps;
   mapping(address  => UserData) public userDictionary;
 
-  function createApp(address  _address,string memory _appName,string memory _category,string memory _appDescription, string memory _developerName) public {
+
+  function createApp(string memory _appName,string memory _category,string memory _appDescription, string memory _developerName) public {
     appsCount++;
     apps[appsCount] = AppData(appsCount, _appName, _category, _appDescription, _developerName);
-    userDictionary[_address].uploadedApps.push(appsCount);
+    userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 
-  function downloadApp(address  _address,uint appId, string memory newCode) public{
-    userDictionary[_address].downloadedApps.push(appId);
-    userDictionary[_address].downloadCode = newCode;
+  function downloadApp(uint appId, string memory newCode) public{
+    userDictionary[msg.sender].downloadedApps.push(appId);
+    userDictionary[msg.sender].downloadCode = newCode;
   }
 
-  function getDownloadedApps(address  _address) public view returns(uint[] memory){
-    return userDictionary[_address].downloadedApps;
+  function getDownloadedApps() public view returns(uint[] memory){
+    return userDictionary[msg.sender].downloadedApps;
   }
 
-  function getUploadedApps(address  _address) public view returns(uint[] memory){
-    return userDictionary[_address].uploadedApps;
+  function getUploadedApps() public view returns(uint[] memory){
+    return userDictionary[msg.sender].uploadedApps;
   }
 
-  function getDownloadCode(address  _address) public view returns(string memory){
-    return userDictionary[_address].downloadCode;
+  function getDownloadCode() public view returns(string memory){
+    return userDictionary[msg.sender].downloadCode;
   }
 
-  function updateDownloadCode(address _address, string memory newCode) public {
-    userDictionary[_address].downloadCode = newCode;
+  function updateDownloadCode(string memory newCode) public {
+    userDictionary[msg.sender].downloadCode = newCode;
   }
 
 }

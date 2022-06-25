@@ -24,8 +24,7 @@ class App extends React.Component {
       apps :[],
       downloadedApps:[],
       uploadedApps:[],
-      appsCount : 0,
-      downloadCode: "oj"
+      appsCount : 0 
     };
 
   }
@@ -50,16 +49,7 @@ class App extends React.Component {
         apps : [...appsTemp]
       });
 
-      //this.downloadCode = "hi";
-      let dCode = await contract.methods.getDownloadCode().call();
-      //console.log("hey" + dCode);
-      //console.log(this.state.downloadCode+"A");
-      this.setState({
-        downloadCode: dCode
-      });
-      // console.log(this.state.downloadCode+"AA");
-      //console.log(this.downloadCode + "A");
-      let mydownloadedApps = await contract.methods.getDownloadedApps().call();
+      let mydownloadedApps = await contract.methods.getDownloadedApps(this.state.account).call();
       let downloadedAppsTemp=[];
       let iterator=0;
       while(mydownloadedApps[iterator]!=undefined){
@@ -71,7 +61,7 @@ class App extends React.Component {
         downloadedApps : [...downloadedAppsTemp]
       });
 
-      let myUploadedApps = await contract.methods.getUploadedApps().call();
+      let myUploadedApps = await contract.methods.getUploadedApps(this.state.account).call();
       let uploadedAppsTemp=[];
       let iter=0;
       while(myUploadedApps[iter]!=undefined){
@@ -123,7 +113,7 @@ class App extends React.Component {
 
   addNewApp = async (appName,appCategory,AppDescription,appDeveloper)=>{
 
-    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appDeveloper).send({from : this.state.account});
+    await this.state.appStoreContract.methods.createApp(this.state.account,appName,appCategory,AppDescription,appDeveloper).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
 
     this.setState(oldState => ({
@@ -148,14 +138,11 @@ class App extends React.Component {
   }
 
   downloadApp = async (appId) =>{
-    console.log("PRE: " + this.state.downloadCode);
-    let val = this.state.downloadCode + "$" + appId.toString();
-    await this.state.appStoreContract.methods.downloadApp(appId, val).send({from : this.state.account});
+    await this.state.appStoreContract.methods.downloadApp(this.state.account,appId).send({from : this.state.account});
     const app = await this.state.appStoreContract.methods.apps(appId).call();
     this.setState(oldState=>({
-      downloadCode : val,
       downloadedApps : [...oldState.downloadedApps,app]
-    }));
+    }))
   }
 }
 
