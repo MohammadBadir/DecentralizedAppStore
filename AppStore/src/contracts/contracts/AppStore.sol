@@ -38,6 +38,8 @@ contract AppStore {
   }
 
   function updateUserName(string memory userName)public{
+    require(bytes(userName).length!=0,"username cannot be empty");
+    require(bytes(userDictionary[msg.sender].userName).length==0,"username is already set");
     userDictionary[msg.sender].userName=userName;
   }
 
