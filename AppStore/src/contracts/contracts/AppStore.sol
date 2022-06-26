@@ -17,7 +17,6 @@ contract AppStore {
     string userName;
   
     string downloadCode;
-    uint[] downloadedApps;
     uint[] uploadedApps;
   }
   
@@ -37,19 +36,11 @@ contract AppStore {
     userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 
-  function updateUserName(string memory userName)public{
+  function registerUser(string memory userName, string memory initDownloadCode)public{
     require(bytes(userName).length!=0,"username cannot be empty");
     require(bytes(userDictionary[msg.sender].userName).length==0,"username is already set");
     userDictionary[msg.sender].userName=userName;
-  }
-
-  function downloadApp(uint appId, string memory newCode) public{
-    userDictionary[msg.sender].downloadedApps.push(appId);
-    userDictionary[msg.sender].downloadCode = newCode;
-  }
-
-  function getDownloadedApps() public view returns(uint[] memory){
-    return userDictionary[msg.sender].downloadedApps;
+    userDictionary[msg.sender].downloadCode=initDownloadCode;
   }
 
   function getUploadedApps() public view returns(uint[] memory){

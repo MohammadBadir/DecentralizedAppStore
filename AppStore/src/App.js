@@ -8,7 +8,8 @@ import MyApps from './MyApps.js';
 import DownloadedApps from './DownloadedApps.js';
 import UploadApp from './UploadApp.js';
 import FirstTimeScreen from './firstTimeScreen'
-
+import { encrypt } from '@metamask/eth-sig-util';
+const ascii85 = require('ascii85');
 
 
 class App extends React.Component {
@@ -26,10 +27,167 @@ class App extends React.Component {
       downloadedApps:[],
       uploadedApps:[],
       appsCount : 0,
-      downloadCode: "oj",
-      isFirstTime : true
+      isFirstTime : true,
+      publicKey: ""
     };
 
+  }
+
+  intToChar() {
+    let someInt = Math.floor(Math.random() * 71) + 58;
+    return String.fromCharCode(someInt);
+  }
+
+  encryptData(publicKey, data) {
+    // Returned object contains 4 properties: version, ephemPublicKey, nonce, ciphertext
+    // Each contains data encoded using base64, version is always the same string
+    const enc = encrypt({
+      publicKey: publicKey.toString('base64'),
+      data: ascii85.encode(data).toString(),
+      version: 'x25519-xsalsa20-poly1305',
+    });
+  
+    // We want to store the data in smart contract, therefore we concatenate them
+    // into single Buffer
+    const buf = Buffer.concat([
+      Buffer.from(enc.ephemPublicKey, 'base64'),
+      Buffer.from(enc.nonce, 'base64'),
+      Buffer.from(enc.ciphertext, 'base64'),
+    ]);
+    
+    // In smart contract we are using `bytes[112]` variable (fixed size byte array)
+    // you might need to use `bytes` type for dynamic sized array
+    // We are also using ethers.js which requires type `number[]` when passing data
+    // for argument of type `bytes` to the smart contract function
+    // Next line just converts the buffer to `number[]` required by contract function
+    // THIS LINE IS USED IN OUR ORIGINAL CODE:
+    // return buf.toJSON().data;
+    
+    // Return just the Buffer to make the function directly compatible with decryptData function
+    return buf;
+  }
+
+  async decryptData(account, data) {
+    // Reconstructing the original object outputed by encryption
+    const structuredData = {
+      version: 'x25519-xsalsa20-poly1305',
+      ephemPublicKey: data.slice(0, 32).toString('base64'),
+      nonce: data.slice(32, 56).toString('base64'),
+      ciphertext: data.slice(56).toString('base64'),
+    };
+    // Convert data to hex string required by MetaMask
+    const ct = `0x${Buffer.from(JSON.stringify(structuredData), 'utf8').toString('hex')}`;
+    // Send request to MetaMask to decrypt the ciphertext
+    // Once again application must have acces to the account
+    const decrypt = await window.ethereum.request({
+      method: 'eth_decrypt',
+      params: [ct, account],
+    });
+    // Decode the base85 to final bytes
+    return ascii85.decode(decrypt);
+  }
+
+  serialize(downloadAppList){
+    // 🤓
+    const count = downloadAppList.length;
+    let userApps = "";
+    console.log("Num of apps: " + count);
+    for (var i = 0; i < count; i++) {
+      userApps = userApps.concat(downloadAppList[i].id.toString(), this.intToChar());
+    }
+    userApps = userApps.concat(this.intToChar(), this.intToChar(), this.intToChar(), this.intToChar(), this.intToChar());
+    console.log("Serialized array before encryption: " + userApps);
+    //encrypt
+    return userApps;
+  }
+
+  async deserialize(decryptedString){
+    //decrypt
+    let stuff = decryptedString
+    let start=0;
+    let end=0;
+    let things = []
+    while(stuff.charCodeAt(start)<='9'.charCodeAt(0) && stuff.charCodeAt(start)>='0'.charCodeAt(0)){
+      if(stuff.charCodeAt(end)<='9'.charCodeAt(0) && stuff.charCodeAt(end)>='0'.charCodeAt(0)){
+        end++;
+        continue;
+      }
+      let temp = parseInt(stuff.substring(start, end));
+      let temp2 = await this.state.appStoreContract.methods.apps(temp).call();
+      things.push(temp2);
+      start = end + 1
+      end = end + 1
+    }
+
+    for(var j=0; j<things.length; j++){
+      console.log("apps[" + j.toString() + "]: " + things[j].toString());
+    }
+
+    return things;
+  }
+
+  async initDownloadList(contract){
+    console.log('** Fetching Downloaded App List **');
+
+    //Load download code string from blockchain and convert to buffer
+    let dCodeStr = await contract.methods.getDownloadCode().call();
+    let dCodeBuffer = Buffer.from(JSON.parse(dCodeStr).data);
+
+    console.log("Encrypted String: " + dCodeStr)
+
+    //Decrypt download code and convert to string
+    let decryptedBuffer = await this.decryptData(this.state.account, dCodeBuffer);
+    let decryptedString = decryptedBuffer.toString();
+
+    console.log("Decrypted string: " + decryptedString);
+
+    //Build downloadedApps array
+    let appArr = await this.deserialize(decryptedString);
+    this.setState({
+      downloadedApps : appArr
+    });
+
+    console.log('** End **');
+  }
+
+  async getUpdatedDownloadCode(appId){
+    console.log("--Generating new download code after adding app with Id: " + appId + "--");
+
+    //Add app to downloadedAppsArray
+    const newApp = await this.state.appStoreContract.methods.apps(appId).call();
+    let updatedList = [...this.state.downloadedApps, newApp];
+    this.setState(oldState=>({
+      downloadedApps : updatedList
+    }));
+
+    //Serialize
+    let serialized = this.serialize(updatedList);
+    let buffer = Buffer.from(serialized, "utf-8");
+
+    //Fetch public key, request it if it's not in state
+    let pubKey = this.state.publicKey;
+    if(pubKey==''){
+      // Key is returned as base64
+      const keyB64 = await window.ethereum.request({
+        method: 'eth_getEncryptionPublicKey',
+        params: [this.state.account],
+      });
+
+      pubKey = Buffer.from(keyB64, 'base64')
+      this.setState({
+        publicKey : pubKey
+      });
+    }
+    console.log("Public Key: " + pubKey);
+
+    //Encrypt
+    let encryptedBuffer = this.encryptData(pubKey, buffer);
+    let encryptedString = JSON.stringify(encryptedBuffer);
+    
+    console.log("Generated encryptedString: " + encryptedString);
+    console.log("--End--");
+
+    return encryptedString;
   }
 
   componentDidMount(){
@@ -46,7 +204,9 @@ class App extends React.Component {
         isFirstTime :userNameTemp==''? true : false,
         userName : userNameTemp
       })
-      if(userNameTemp=='') return;
+      if(userNameTemp==''){
+        return;
+      }
 
       const counter = await contract.methods.appsCount().call();
       let appsTemp=[];
@@ -59,26 +219,28 @@ class App extends React.Component {
         appsCount : parseInt(counter),
       });
 
-      //this.downloadCode = "hi";
-      let dCode = await contract.methods.getDownloadCode().call();
-      //console.log("hey" + dCode);
-      //console.log(this.state.downloadCode+"A");
-      this.setState({
-        downloadCode: dCode
-      });
+      this.initDownloadList(contract);
+
+      // //this.downloadCode = "hi";
+      // let dCode = await contract.methods.getDownloadCode().call();
+      // //console.log("hey" + dCode);
+      // //console.log(this.state.downloadCode+"A");
+      // this.setState({
+      //   downloadCode: dCode
+      // });
       // console.log(this.state.downloadCode+"AA");
       //console.log(this.downloadCode + "A");
-      let mydownloadedApps = await contract.methods.getDownloadedApps().call();
-      let downloadedAppsTemp=[];
-      let iterator=0;
-      while(mydownloadedApps[iterator]!=undefined){
-        const app = await contract.methods.apps(mydownloadedApps[iterator]).call();
-        downloadedAppsTemp=[...downloadedAppsTemp,app]
-        iterator++;
-      }
-      this.setState({
-        downloadedApps : [...downloadedAppsTemp]
-      });
+      // let mydownloadedApps = await contract.methods.getDownloadedApps().call();
+      // let downloadedAppsTemp=[];
+      // let iterator=0;
+      // while(mydownloadedApps[iterator]!=undefined){
+      //   const app = await contract.methods.apps(mydownloadedApps[iterator]).call();
+      //   downloadedAppsTemp=[...downloadedAppsTemp,app]
+      //   iterator++;
+      // }
+      // this.setState({
+      //   downloadedApps : [...downloadedAppsTemp]
+      // });
 
       let myUploadedApps = await contract.methods.getUploadedApps().call();
       let uploadedAppsTemp=[];
@@ -163,27 +325,62 @@ class App extends React.Component {
   }
 
   downloadApp = async (appId) =>{
-    console.log("PRE: " + this.state.downloadCode);
-    let val = this.state.downloadCode + "$" + appId.toString();
-    await this.state.appStoreContract.methods.downloadApp(appId, val).send({from : this.state.account});
-    const app = await this.state.appStoreContract.methods.apps(appId).call();
-    this.setState(oldState=>({
-      downloadCode : val,
-      downloadedApps : [...oldState.downloadedApps,app]
-    }));
+    let newStr = await this.getUpdatedDownloadCode(appId);
+
+    await this.state.appStoreContract.methods.updateDownloadCode(newStr).send({from : this.state.account});
+    // const app = await this.state.appStoreContract.methods.apps(appId).call();
+    // console.log("PRE: " + this.state.downloadCode);
+    // let val = this.state.downloadCode + "$" + appId.toString();
+    // await this.state.appStoreContract.methods.downloadApp(appId, val).send({from : this.state.account});
+    // const app = await this.state.appStoreContract.methods.apps(appId).call();
+    // this.setState(oldState=>({
+    //   downloadCode : val,
+    //   downloadedApps : [...oldState.downloadedApps,app]
+    // }));
   }
 
   updateUserName =async (userName) => {
     this.setState({
       userName : userName
     })
-    await this.state.appStoreContract.methods.updateUserName(userName).send({from : this.state.account});
+    let encryptedString = await this.generateInitialEncrypedString();
+    await this.state.appStoreContract.methods.registerUser(userName, encryptedString).send({from : this.state.account});
   }
 
   toggleFirstTime = ()=>{
     this.setState({
       isFirstTime : false
     })
+  }
+
+  generateInitialEncrypedString = async () =>{
+    console.log("Generating initial encrypted string");
+
+    //Serialize
+    let serialized = this.serialize([]);
+    let buffer = Buffer.from(serialized, "utf-8");
+
+    //Fetch public key, request it if it's not in state
+    let pubKey = this.state.publicKey;
+    if(pubKey==''){
+      // Key is returned as base64
+      const keyB64 = await window.ethereum.request({
+        method: 'eth_getEncryptionPublicKey',
+        params: [this.state.account],
+      });
+
+      pubKey = Buffer.from(keyB64, 'base64')
+      this.setState({
+        publicKey : pubKey
+      });
+    }
+    console.log("Public Key: " + pubKey);
+
+    //Encrypt
+    let encryptedBuffer = this.encryptData(pubKey, buffer);
+    let encryptedString = JSON.stringify(encryptedBuffer);
+
+    return encryptedString;
   }
 }
 
