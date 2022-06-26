@@ -6,6 +6,8 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
+import SelectInput from '@mui/material/Select/SelectInput';
+import { wait } from '@testing-library/user-event/dist/utils';
 
 
 class AppsView extends React.Component{
@@ -57,8 +59,9 @@ class AppsView extends React.Component{
                       <span style={{fontSize:"14px"}}>{app.category}</span><br/>
                       <span style={{fontSize:"14px",color:"darkorange"}}>4.5</span>
                     </div>
-                    <div style={{pointerEvents:"auto", display:"inline-block",verticalAlign:"top",marginTop:"5px",marginLeft:"20px"}}>
-                        <button className="downloadButton" data-appid={app.id} key={app.id} onClick={this.downloadApp} >Download</button>
+                    <div style={{pointerEvents:"auto", display:"inline-block",verticalAlign:"top",marginTop:"5px",marginLeft:"30px"}}>
+                        <button  id={"download "+ app.id}className="downloadButton" data-appid={app.id} key={app.id} onClick={this.downloadApp} >Download</button><br/>
+                        <span id={"downloading "+ app.id} style={{fontSize:"12.5px",color:"gray"}}></span>
                     </div>
                     </Card>
                   </Grid>
@@ -69,8 +72,16 @@ class AppsView extends React.Component{
          );
     }
     downloadApp = async(event)=>{
+      const spanElement=document.getElementById('downloading '+event.target.dataset.appid);
+      const buttonElement=document.getElementById('download '+event.target.dataset.appid);
+      spanElement.innerHTML ='downloading...';
+      buttonElement.parentNode.replaceChild (spanElement,buttonElement);
       await this.props.downloadApp(event.target.dataset.appid)
-      alert('app has been downloaded successfully')
+      spanElement.innerHTML ='';
+      spanElement.parentNode.replaceChild (buttonElement,spanElement);
+      setTimeout(function(){
+        alert('app has been downloaded successfully')
+    }, 100);
     }
 
     changeCategoryView = (event) => {

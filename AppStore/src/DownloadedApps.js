@@ -21,8 +21,10 @@ class DownloadedApps extends React.Component{
 
     render(){
       return (
-        <div style={{marginTop:"15px"}}>
-          <input className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
+        <div>
+          <div style={{marginTop:"15px"}}>
+            <input className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
+          </div>
           <Grid className="appsGrid" container spacing={5} rowSpacing={8} style={{marginTop:"10px",marginLeft:"10px"}}>
               {
                 this.props.downloadedApps.filter(
