@@ -82,6 +82,7 @@ class AppsView extends React.Component{
       for(var i = 0; i < elements.length; i++){
         elements[i].style.color = "rgb(36, 41, 46)";
         elements[i].style.backgroundColor = 'rgb(250, 251, 252)';
+
       }
       event.target.style.color='white'
       event.target.style.backgroundColor='rgb(111, 109, 227)'
