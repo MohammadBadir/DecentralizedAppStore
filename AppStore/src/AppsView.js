@@ -50,7 +50,7 @@ class AppsView extends React.Component{
                   }
                 ).map((app, index) => (
                   <Grid  key={`${app.appName}-${index}`} item xs={4}>
-                  <Card style={{height:"65px", width:"300px",padding:"10px", border: "none", boxShadow: "none" }}className="appCard" onClick={()=>{}}>
+                  <Card style={{height:"65px", width:"300px",padding:"10px", border: "none", boxShadow: "none" }} data-appid={app.id+100} className="appCard" onClick={()=>{this.props.openAppPage(app.id)}}>
                     <div style={{display:"inline-block",verticalAlign:"top"}}>
                       <img src={dappImg} width={50}height={52}/>
                     </div>

@@ -4,6 +4,7 @@ import './App.css'
 import { APP_STORE_ABI, APP_STORE_ADDRESS } from './config';
 import TopBar from './TopBar.js';
 import AppsView from './AppsView.js';
+import AppPage from './AppPage';
 import MyApps from './MyApps.js';
 import DownloadedApps from './DownloadedApps.js';
 import UploadApp from './UploadApp.js';
@@ -19,7 +20,8 @@ class App extends React.Component {
 
     this.categories=["Education", "Entertainment", "News", "Sports", "Music", "Shopping", "Business"];
     this.state={
-      currentView: 0, // apps=0,myapps=1,deownloaded=2,uploadapp=3...
+      currentView: 0, // apps=0,myapps=1,downloaded=2,uploadapp=3...
+      appPageView:0,
       account : "",
       userName :'',
       appStoreContract : [],
@@ -258,9 +260,27 @@ class App extends React.Component {
     load();
   }
 
+  backToApps = () => { 
+    this.setState({
+      appPageView : 0
+    })  
+  }
+
+  openAppPage =(appid) => {
+    this.setState({
+      appPageView : appid
+    })
+  }
 
   render(){
-    if(this.state.isFirstTime){
+    if(this.state.appPageView!=0){
+      return (
+        <div>
+             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <AppPage app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
+        </div>
+       );
+    }else if(this.state.isFirstTime){
       return ( 
         <div>
             <FirstTimeScreen updateUserName={this.updateUserName} toggleFirstTime={this.toggleFirstTime}/>
@@ -270,7 +290,7 @@ class App extends React.Component {
        return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <AppsView  downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
+             <AppsView   openAppPage={this.openAppPage} downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
         </div>
        );
     }else if(this.state.currentView==1){
