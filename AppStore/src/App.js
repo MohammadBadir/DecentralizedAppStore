@@ -331,9 +331,11 @@ class App extends React.Component {
   }
 
   changeView=(event)=>{
+
     const newViewIndex=event.target.dataset.index;
     this.setState({
       currentView : newViewIndex,
+      appPageView : 0 
     })
     var elements = document.getElementsByClassName('topButtons'); 
     for(var i = 0; i < elements.length; i++){
