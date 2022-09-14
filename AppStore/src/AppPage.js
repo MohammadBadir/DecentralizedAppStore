@@ -21,7 +21,7 @@ class AppPage extends React.Component{
       return (
             <div> 
               <div style={{marginTop:"20px",marginLeft:"20px"}}>
-                    <button className='categotyButton' onClick={this.props.backToApps}>back</button>
+                    <button className='categotyButton' onClick={this.props.backToApps}>go back</button>
                     <div style={{marginTop:"15px"}}>
                         <img className="app-image-parent" style={{marginBottom:"-20px"}} src={dappImg} width={130}height={130}/> 
                         <h1 className="app-image-child">                   
@@ -60,6 +60,7 @@ class AppPage extends React.Component{
                             {this.props.app.category} 
                         </div>
                         <hr/>
+
                         <div >
                             <b>
                             Developer
@@ -69,7 +70,6 @@ class AppPage extends React.Component{
                         </div>
                         <hr/>
 
-            
                         <div >
                             <b>
                             Reviews & Ratings :
@@ -77,7 +77,6 @@ class AppPage extends React.Component{
                             <span style={{fontSize:"14px",color:"grey",marginLeft:"10px"}}> 4.5&#9733; </span>
                             <br></br>
                         </div>
-
 
                         <div style={{height:"100px"}}>
 

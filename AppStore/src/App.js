@@ -297,14 +297,14 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <MyApps uploadedApps={this.state.uploadedApps}/>
+             <MyApps openAppPage={this.openAppPage} uploadedApps={this.state.uploadedApps}/>
         </div>
        );
     }else if(this.state.currentView==2){
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <DownloadedApps downloadedApps={this.state.downloadedApps}/>
+             <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.downloadedApps}/>
         </div>
        );
     }else if(this.state.currentView==3){
