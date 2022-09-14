@@ -17,6 +17,18 @@ class AppPage extends React.Component{
     super(props);
   }
 
+  downloadApp = async(event)=>{
+    const spanElement=document.getElementById('downloading '+event.target.dataset.appid);
+    const buttonElement=document.getElementById('download '+event.target.dataset.appid);
+    spanElement.innerHTML ='downloading...';
+    buttonElement.parentNode.replaceChild (spanElement,buttonElement);
+    await this.props.downloadApp(event.target.dataset.appid)
+    spanElement.innerHTML ='';
+    spanElement.parentNode.replaceChild (buttonElement,spanElement);
+    setTimeout(function(){
+      alert('app has been downloaded successfully')
+  }, 100);
+  }
     render(){
       return (
             <div> 
@@ -24,9 +36,13 @@ class AppPage extends React.Component{
                     <button className='categotyButton' onClick={this.props.backToApps}>go back</button>
                     <div style={{marginTop:"15px"}}>
                         <img className="app-image-parent" style={{marginBottom:"-20px"}} src={dappImg} width={130}height={130}/> 
-                        <h1 className="app-image-child">                   
-                             {this.props.app.appName} 
+                        <h1 style={{marginBottom:"0px"}}className="app-image-child">                   
+                             {this.props.app.appName}  
                         </h1>
+                        <div style={{verticalAlign:"top",marginTop:"5px"}}>
+                            <button  id={"download "+ this.props.app.id}className="DownloadButton" data-appid={this.props.app.id} key={this.props.app.id} onClick={this.downloadApp} >Download</button><br/>
+                            <span id={"downloading "+ this.props.app.id} style={{fontSize:"12.5px",color:"gray"}}></span>
+                        </div>
                     </div>
 
                     <div>    
@@ -79,7 +95,6 @@ class AppPage extends React.Component{
                         </div>
 
                         <div style={{height:"100px"}}>
-
                         </div>
                     </div>       
                 </div>

@@ -33,8 +33,7 @@ class AppsView extends React.Component{
               {
               this.props.categories.map((category,index)=>(
                 <button className="categoryButtons" key={category} data-category={category} onClick={this.changeCategoryView} style={{display:"inline-block",marginRight:"15px"}}>{category}</button>
-              )
-              )
+              ))
               }
               <input  className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
              
@@ -46,7 +45,7 @@ class AppsView extends React.Component{
                   return (this.state.categoryView=="All" || app.category==this.state.categoryView)
                 }).filter(
                   (app)=>{
-                    return app.appName.includes(this.state.searchedApp)
+                    return app.appName.toLowerCase().includes(this.state.searchedApp.toLowerCase())
                   }
                 ).map((app, index) => (
                   <Grid  key={`${app.appName}-${index}`} item xs={4}>
@@ -59,10 +58,7 @@ class AppsView extends React.Component{
                       <span style={{fontSize:"14px"}}>{app.category}</span><br/>
                       <span style={{fontSize:"14px",color:"darkorange"}}>4.5&#9733;</span>
                     </div>
-                    <div style={{pointerEvents:"auto", display:"inline-block",verticalAlign:"top",marginTop:"5px",marginLeft:"30px"}}>
-                        <button  id={"download "+ app.id}className="downloadButton" data-appid={app.id} key={app.id} onClick={this.downloadApp} >Download</button><br/>
-                        <span id={"downloading "+ app.id} style={{fontSize:"12.5px",color:"gray"}}></span>
-                    </div>
+
                     </Card>
                   </Grid>
                 ))
@@ -70,18 +66,6 @@ class AppsView extends React.Component{
               </Grid>
             </div>
          );
-    }
-    downloadApp = async(event)=>{
-      const spanElement=document.getElementById('downloading '+event.target.dataset.appid);
-      const buttonElement=document.getElementById('download '+event.target.dataset.appid);
-      spanElement.innerHTML ='downloading...';
-      buttonElement.parentNode.replaceChild (spanElement,buttonElement);
-      await this.props.downloadApp(event.target.dataset.appid)
-      spanElement.innerHTML ='';
-      spanElement.parentNode.replaceChild (buttonElement,spanElement);
-      setTimeout(function(){
-        alert('app has been downloaded successfully')
-    }, 100);
     }
 
     changeCategoryView = (event) => {

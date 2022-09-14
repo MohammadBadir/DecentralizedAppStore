@@ -91,14 +91,14 @@ form{
   background-color: rgb(111, 109, 227);
 }
 
-.topButtons{
+.topButtons ,.DownloadButton{
   margin: 2px;
   display: inline-block;
   background-color: rgb(111, 109, 227); 
   color: white;
 }
 
-.topButtons {
+.topButtons ,.DownloadButton{
   appearance: none;
   border: 1px solid rgba(27, 31, 35, 0.15);
   border-radius: 6px;
@@ -123,34 +123,41 @@ form{
 }
 
 .topButtons:hover {
-  background-color: #F3F4F6 !important;
+  background-color: #ffffff !important;
   color:#282c34 !important;
   text-decoration: none;
   transition-duration: 0.1s;
 }
 
-.topButtons:disabled {
+.DownloadButton:hover{
+  background-color: rgb(131, 129, 221) !important;
+  color:#e5e9ef !important;
+  text-decoration: none;
+  transition-duration: 0.1s;
+}
+
+.topButtons:disabled , .DownloadButton:disabled{
   background-color: #FAFBFC;
   border-color: rgba(27, 31, 35, 0.15);
-  color: #959DA5;
+  color: #8e959b;
   cursor: default;
 }
 
-.topButtons:active {
+.topButtons:active ,.DownloadButton:active{
   background-color: #EDEFF2;
   box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
   transition: none 0s;
 }
 
-.topButtons:focus {
+.topButtons:focus  , .DownloadButton:focus{
   outline: 1px transparent;
 }
 
-.topButtons:before {
+.topButtons:before , .DownloadButton:before{
   display: none;
 }
 
-.topButtons:-webkit-details-marker {
+.topButtons:-webkit-details-marker .DownloadButton:-webkit-details-marker{
   display: none;
 }
 

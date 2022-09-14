@@ -29,7 +29,7 @@ class DownloadedApps extends React.Component{
               {
                 this.props.downloadedApps.filter(
                   (app)=>{
-                    return app.appName.includes(this.state.searchedApp)
+                    return app.appName.toLowerCase().includes(this.state.searchedApp.toLowerCase())
                   }
                 ).map((app, index) => (
                   <Grid  key={`${app.appName}-${index}`} item xs={4}>

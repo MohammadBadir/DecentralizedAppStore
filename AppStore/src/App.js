@@ -277,7 +277,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <AppPage app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
+             <AppPage downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
         </div>
        );
     }else if(this.state.isFirstTime){
