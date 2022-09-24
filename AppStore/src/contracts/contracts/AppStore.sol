@@ -16,7 +16,7 @@ contract AppStore {
     string appDescription;
     string appDeveloper;
     uint price;
-  //  ReviewAndRating [] reviews;
+    ReviewAndRating [] reviews;
   }
 
   struct UserData {
@@ -39,7 +39,13 @@ contract AppStore {
 
   function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price) public {
     appsCount++;
-    apps[appsCount] = AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName ,price);
+  //  apps[appsCount]= AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName ,price);
+    apps[appsCount].id=appsCount;
+    apps[appsCount].appName=_appName;
+    apps[appsCount].category=_category;
+    apps[appsCount].appDescription=_appDescription;
+    apps[appsCount].appDeveloper=userDictionary[msg.sender].userName;
+    apps[appsCount].price=price;
     userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 
@@ -62,4 +68,8 @@ contract AppStore {
     userDictionary[msg.sender].downloadCode = newCode;
   }
 
+  function addReview(uint _appid,uint _rating,string memory _review,bool _isAnonymous) public {
+      ReviewAndRating memory NewReview=ReviewAndRating(_isAnonymous ? 'anonymous' : userDictionary[msg.sender].userName  ,_rating,_review);
+      apps[_appid].reviews.push(NewReview);
+  }
 }

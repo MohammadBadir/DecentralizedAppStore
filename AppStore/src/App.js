@@ -30,7 +30,8 @@ class App extends React.Component {
       uploadedApps:[],
       appsCount : 0,
       isFirstTime : true,
-      publicKey: ""
+      publicKey: "",
+      review:[]
     };
 
   }

@@ -13,10 +13,32 @@ import { Rating } from '@mui/material';
 import { Typography } from '@mui/material';
 import { padding } from '@mui/system';
 
+
+class Review extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+        return (
+            <div>
+                 <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>{this.props.name}</b><br/>
+                 <Rating name="read-only" size='small' value={this.props.rating} readOnly /> <br/>
+                 {this.props.review}
+                 <hr/>
+            </div>
+    
+     );
+    }
+}
+
 class AppPage extends React.Component{
 
   constructor(props){
     super(props);
+    this.state={
+        ratingInput : 0,
+        reviewInput : "",
+      };
   }
 
   downloadApp = async(event)=>{
@@ -31,6 +53,23 @@ class AppPage extends React.Component{
       alert('app has been downloaded successfully')
   }, 100);
   }
+
+
+  inputChangeHandle =(event) => {
+    this.setState({
+      [event.target.name] : event.target.value
+    });
+  }
+
+  addReview=async()=>{
+    await this.props.addReview(this.props.app.id,this.state.ratingInput,this.state.reviewInput,document.getElementById("anonymousCheckbox").checked)
+    this.setState({
+        ratingInput : '',
+        reviewInput : "",
+    });
+
+  }
+
     render(){
       return (
             <div> 
@@ -101,19 +140,21 @@ class AppPage extends React.Component{
                             
                             <b style={{marginRight:'5px'}} >Rate : </b>
                             
-                            <Rating name="simple-controlled" value={2}  onChange={(event, newValue) => {}}/>
+                            <Rating name="simple-controlled" value={this.state.ratingInput}  onChange={(event, newValue) => {
+                                this.setState({
+                                    ratingInput:newValue
+                                  });
+                            }}/>
 
-                            <textarea style={{marginTop:'0px',marginBottom:'5px',padding:'5px'}} rows='4' cols='45' placeholder='Write A Review'></textarea>
+                            <textarea onChange={this.inputChangeHandle}  name='reviewInput' value={this.state.reviewInput} style={{marginTop:'0px',marginBottom:'5px',padding:'5px'}} rows='4' cols='45' placeholder='Write A Review'></textarea>
 
                             <div style={{marginBottom:'-5px'}}> 
-                                <input style={{marginRight:'7px'}} type="checkbox" id='anonymous'></input>
-                                <label for="anonymous">Anonymous</label>
+                                <input style={{marginRight:'7px'}} type="checkbox" id='anonymousCheckbox' ></input>
+                                <label for="anonymousCheckbox">Anonymous</label>
                             </div>
                             
-                            <button>submit</button>
+                            <button onClick={this.addReview}>submit</button>
                         </fieldset>
-
-                      
 
                         
 
@@ -127,28 +168,38 @@ class AppPage extends React.Component{
 
                             <div style={{height:"10px"}}></div>
 
-                            <b  style={{marginTop:'5px',marginBottom:'1px'}}>mohammad badir</b><br/>
+
+                            {
+                         //       this.props.app.reviews.map((reviewAndRating)=>{
+                       //           <Review name={reviewAndRating.name} rating={reviewAndRating.rating} review={reviewAndRating.review}></Review>
+                       //         })
+                            }
+
+                            <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>mohammad badir</b><br/>
                             <Rating name="read-only" size='small' value={5} readOnly /> <br/>
                             adsad asdsaf 
                             fd fsdfsdfsdf fsd fsdfsdfsdffsadf
                             afdsd sdsa
                             asd 
                             <hr/>
-                            <b  style={{marginTop:'5px',marginBottom:'1px'}}>waseem sarsour</b><br/>
+
+                            <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>waseem sarsour</b><br/>
                             <Rating name="read-only" size='small' value={3} readOnly /> <br/>
                             adsad asdsaf 
                             fd fsdfsdfsdf fsd fsdfsdfsdffsadf
                             afdsd sdsa
                             asd 
-                            <hr/>        
-                            <b  style={{marginTop:'5px',marginBottom:'1px'}}>alex</b><br/>
+                            <hr/>      
+
+                            <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>alex</b><br/>
                             <Rating name="read-only" size='small' value={1} readOnly /> <br/>
                             adsad asdsaf 
                             fd fsdfsdfsdf fsd fsdfsdfsdffsadf
                             afdsd sdsa
                             asd 
-                            <hr/>
-                            
+
+                            <div style={{height:"25px"}}></div>
+
                         </fieldset>
                         <div style={{height:"40px"}}></div>
 
