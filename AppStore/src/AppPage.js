@@ -66,7 +66,7 @@ class AppPage extends React.Component{
                             Price
                             </b>
                             <br></br>
-                            $20
+                            ${this.props.app.price ?? 0}
                         </div>
                         <hr/>
 
@@ -103,7 +103,7 @@ class AppPage extends React.Component{
                             
                             <Rating name="simple-controlled" value={2}  onChange={(event, newValue) => {}}/>
 
-                            <textarea style={{marginTop:'0px',marginBottom:'5px',padding:'5px'}} rows='4' cols='40' placeholder='Write A Review'></textarea>
+                            <textarea style={{marginTop:'0px',marginBottom:'5px',padding:'5px'}} rows='' cols='45' placeholder='Write A Review'></textarea>
 
                             <div style={{marginBottom:'-5px'}}> 
                                 <input style={{marginRight:'7px'}} type="checkbox" id='anonymous'></input>

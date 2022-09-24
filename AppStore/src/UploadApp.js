@@ -9,7 +9,8 @@ class UploadApp extends React.Component{
       appNameInput : "",
       categoryInput : "Education",
       appDescriptionInput : "",
-      appNameEmpty : false
+      appNameEmpty : false,
+      appPriceInput: '0'
     };
   }
 
@@ -25,10 +26,11 @@ class UploadApp extends React.Component{
       appNameEmpty:false
     })
    }
-    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput)
+    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput)
     this.setState({
       appNameInput : "",
       appDescriptionInput : "",
+      appPriceInput : '0'
     });
     alert('app has been uploaded successfully')
   }
@@ -42,6 +44,12 @@ class UploadApp extends React.Component{
                 <input  onChange={this.inputChangeHandle} name='appNameInput' id='appNameInput' value={this.state.appNameInput} placeholder='enter app name' size={53}/>
                 <span style={{fontSize:"0.8em",color:"red"}}>{this.state.appNameEmpty ?  "* App name cannot be empty." : ""}</span>
               </label>
+
+              <label>
+              <b>Price</b>      
+                <input onChange={this.inputChangeHandle} value={this.state.appPriceInput} name='appPriceInput' id='appPriceInput' type="number" style={{height : '25px',width:'50px'}}></input>
+              </label>
+
               <label>
               <b>Category</b>
               <select onChange={this.selectCategory} id="appCategory" value={this.state.categoryInput} name="appCategory">

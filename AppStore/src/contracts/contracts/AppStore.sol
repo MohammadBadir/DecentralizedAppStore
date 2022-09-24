@@ -4,12 +4,19 @@ pragma solidity >=0.4.22 <0.9.0;
 contract AppStore {
   uint public appsCount = 0; // state variable
   //enum appCategory{ Education, Entertainment, News, Sports, Music, Shopping, Business}
+  struct ReviewAndRating{
+    string name;
+    uint rating;
+    string review;
+  }
   struct AppData {
     uint id;
     string appName;
     string category;
     string appDescription;
     string appDeveloper;
+    uint price;
+  //  ReviewAndRating [] reviews;
   }
 
   struct UserData {
@@ -30,9 +37,9 @@ contract AppStore {
     return userDictionary[msg.sender].userName;
   }
 
-  function createApp(string memory _appName,string memory _category,string memory _appDescription) public {
+  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price) public {
     appsCount++;
-    apps[appsCount] = AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName);
+    apps[appsCount] = AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName ,price);
     userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 

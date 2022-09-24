@@ -318,9 +318,9 @@ class App extends React.Component {
   }
 
 
-  addNewApp = async (appName,appCategory,AppDescription)=>{
+  addNewApp = async (appName,appCategory,AppDescription,appPrice)=>{
 
-    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription).send({from : this.state.account});
+    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
 
     this.setState(oldState => ({
