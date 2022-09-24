@@ -31,7 +31,7 @@ class UploadApp extends React.Component{
       appNameInput : "",
       appDescriptionInput : "",
       appPriceInput : '0'
-    });
+    }); 
     alert('app has been uploaded successfully')
   }
 
