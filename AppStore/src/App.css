@@ -308,3 +308,6 @@ a:hover {
   border-radius: 50%;
 }
 
+fieldset > div > input , label{
+  display: inline-block;
+}

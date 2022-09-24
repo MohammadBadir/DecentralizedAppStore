@@ -9,7 +9,9 @@ import CardContent from "@mui/material/CardContent";
 import SelectInput from '@mui/material/Select/SelectInput';
 import { wait } from '@testing-library/user-event/dist/utils';
 import { IconButton } from '@mui/material';
-
+import { Rating } from '@mui/material';
+import { Typography } from '@mui/material';
+import { padding } from '@mui/system';
 
 class AppPage extends React.Component{
 
@@ -90,11 +92,67 @@ class AppPage extends React.Component{
                             <b>
                             Reviews & Ratings :
                             </b>
-                            <span style={{fontSize:"14px",color:"grey",marginLeft:"10px"}}> 4.5&#9733; </span>
-                            <br></br>
                         </div>
 
                         <div style={{height:"100px"}}>
+
+                        <fieldset>
+                            <legend>Rate the App!</legend>
+                            
+                            <b style={{marginRight:'5px'}} >Rate : </b>
+                            
+                            <Rating name="simple-controlled" value={2}  onChange={(event, newValue) => {}}/>
+
+                            <textarea style={{marginTop:'0px',marginBottom:'5px',padding:'5px'}} rows='4' cols='40' placeholder='Write A Review'></textarea>
+
+                            <div style={{marginBottom:'-5px'}}> 
+                                <input style={{marginRight:'7px'}} type="checkbox" id='anonymous'></input>
+                                <label for="anonymous">Anonymous</label>
+                            </div>
+                            
+                            <button>submit</button>
+                        </fieldset>
+
+                      
+
+                        
+
+                        <fieldset>
+                            <legend>Other Reviews: </legend>
+                            <b>
+                                Average Rate :
+                            </b>
+                            <span style={{fontSize:"15px",color:"darkorange",marginLeft:"10px"}}> 4.5&#9733; </span>
+                            <br/>
+
+                            <div style={{height:"10px"}}></div>
+
+                            <b  style={{marginTop:'5px',marginBottom:'1px'}}>mohammad badir</b><br/>
+                            <Rating name="read-only" size='small' value={5} readOnly /> <br/>
+                            adsad asdsaf 
+                            fd fsdfsdfsdf fsd fsdfsdfsdffsadf
+                            afdsd sdsa
+                            asd 
+                            <hr/>
+                            <b  style={{marginTop:'5px',marginBottom:'1px'}}>waseem sarsour</b><br/>
+                            <Rating name="read-only" size='small' value={3} readOnly /> <br/>
+                            adsad asdsaf 
+                            fd fsdfsdfsdf fsd fsdfsdfsdffsadf
+                            afdsd sdsa
+                            asd 
+                            <hr/>        
+                            <b  style={{marginTop:'5px',marginBottom:'1px'}}>alex</b><br/>
+                            <Rating name="read-only" size='small' value={1} readOnly /> <br/>
+                            adsad asdsaf 
+                            fd fsdfsdfsdf fsd fsdfsdfsdffsadf
+                            afdsd sdsa
+                            asd 
+                            <hr/>
+                            
+                        </fieldset>
+                        <div style={{height:"40px"}}></div>
+
+
                         </div>
                     </div>       
                 </div>
