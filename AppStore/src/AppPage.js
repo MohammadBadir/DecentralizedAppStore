@@ -151,10 +151,10 @@ class AppPage extends React.Component{
 
                             <div style={{marginBottom:'-5px'}}> 
                                 <input style={{marginRight:'7px'}} type="checkbox" id='anonymousCheckbox' ></input>
-                                <label htmlFor="anonymousCheckbox">Anonymous</label>
+                                <label htmlFor="anonymousCheckbox">Post Anonymously</label>
                             </div>
                             
-                            <button onClick={this.addReview}>submit</button>
+                            <button onClick={this.addReview}>Submit</button>
                         </fieldset>
                         <fieldset>
                             <legend>Other Reviews: </legend>

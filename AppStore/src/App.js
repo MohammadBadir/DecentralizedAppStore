@@ -342,7 +342,7 @@ class App extends React.Component {
 
 
   addReview = async (appid, rating, review, isAnonymous)=>{
-    const name=isAnonymous?'anonymous':this.state.userName;
+    const name=isAnonymous?'Anonymous':this.state.userName;
     await this.state.appStoreContract.methods.addReview(appid,rating,review,name).send({from : this.state.account});
     const _apps=this.state.apps;
     _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:name,rating:rating,review:review}];
