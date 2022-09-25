@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
+pragma experimental ABIEncoderV2;
 
 contract AppStore {
   uint public appsCount = 0; // state variable
@@ -63,13 +64,16 @@ contract AppStore {
   function getDownloadCode() public view returns(string memory){
     return userDictionary[msg.sender].downloadCode;
   }
+    function getReviews(uint appid) public view returns(ReviewAndRating [] memory ){
+    return apps[appid].reviews;
+  }
 
   function updateDownloadCode(string memory newCode) public {
     userDictionary[msg.sender].downloadCode = newCode;
   }
 
-  function addReview(uint _appid,uint _rating,string memory _review,bool _isAnonymous) public {
-      ReviewAndRating memory NewReview=ReviewAndRating(_isAnonymous ? 'anonymous' : userDictionary[msg.sender].userName  ,_rating,_review);
+  function addReview(uint _appid,uint _rating,string memory _review,string memory _userName) public {
+      ReviewAndRating memory NewReview=ReviewAndRating(_userName  , _rating, _review);
       apps[_appid].reviews.push(NewReview);
   }
 }

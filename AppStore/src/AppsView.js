@@ -56,7 +56,7 @@ class AppsView extends React.Component{
                     <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",marginTop:"-8px"}}>
                       <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
                       <span style={{fontSize:"14px"}}>{app.category}</span><br/>
-                      <span style={{fontSize:"14px",color:"darkorange"}}>4.5&#9733;</span>
+                      <span style={{fontSize:"14px",color:"darkorange"}}>{app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(app.reviews.length==0?1:app.reviews.length)}&#9733;</span>
                     </div>
 
                     </Card>

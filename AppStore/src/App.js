@@ -10,6 +10,7 @@ import DownloadedApps from './DownloadedApps.js';
 import UploadApp from './UploadApp.js';
 import FirstTimeScreen from './firstTimeScreen'
 import { encrypt } from '@metamask/eth-sig-util';
+import { ThirtyFpsRounded } from '@mui/icons-material';
 const ascii85 = require('ascii85');
 
 
@@ -146,6 +147,9 @@ class App extends React.Component {
 
     //Build downloadedApps array
     let appArr = await this.deserialize(decryptedString);
+  //  const reviews = await contract.methods.getReviews(appArr.id).call();
+   // appArr.reviews=reviews;
+
     this.setState({
       downloadedApps : appArr
     });
@@ -215,6 +219,8 @@ class App extends React.Component {
       let appsTemp=[];
       for (var i = 1; i <= counter; i++) {
         const app = await contract.methods.apps(i).call();
+        const reviews = await contract.methods.getReviews(app.id).call();
+        app.reviews=reviews;
         appsTemp=[...appsTemp,app]
       }
       this.setState({
@@ -250,6 +256,8 @@ class App extends React.Component {
       let iter=0;
       while(myUploadedApps[iter]!=undefined){
         const app = await contract.methods.apps(myUploadedApps[iter]).call();
+        const reviews = await contract.methods.getReviews(app.id).call();
+        app.reviews=reviews;
         uploadedAppsTemp=[...uploadedAppsTemp,app]
         iter++;
       }
@@ -278,7 +286,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <AppPage downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
+             <AppPage addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
         </div>
        );
     }else if(this.state.isFirstTime){
@@ -323,12 +331,24 @@ class App extends React.Component {
 
     await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
-
+    const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
+    newApp.reviews=reviews;
     this.setState(oldState => ({
       apps : [...oldState.apps,newApp],
       appsCount : oldState.appsCount+1,
       uploadedApps : [...oldState.uploadedApps,newApp]
     }))
+  }
+
+
+  addReview = async (appid, rating, review, isAnonymous)=>{
+    const name=isAnonymous?'anonymous':this.state.userName;
+    await this.state.appStoreContract.methods.addReview(appid,rating,review,name).send({from : this.state.account});
+    const _apps=this.state.apps;
+    _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:name,rating:rating,review:review}];
+    this.setState({
+      apps : _apps
+    })
   }
 
   changeView=(event)=>{

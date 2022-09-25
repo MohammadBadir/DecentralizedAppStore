@@ -67,10 +67,11 @@ class AppPage extends React.Component{
         ratingInput : '',
         reviewInput : "",
     });
-
   }
 
     render(){
+        console.log(JSON.stringify(this.props.app, null, 4));
+        console.log(JSON.stringify(this.props.app.reviews, null, 4));
       return (
             <div> 
               <div style={{marginTop:"20px",marginLeft:"20px"}}>
@@ -150,56 +151,29 @@ class AppPage extends React.Component{
 
                             <div style={{marginBottom:'-5px'}}> 
                                 <input style={{marginRight:'7px'}} type="checkbox" id='anonymousCheckbox' ></input>
-                                <label for="anonymousCheckbox">Anonymous</label>
+                                <label htmlFor="anonymousCheckbox">Anonymous</label>
                             </div>
                             
                             <button onClick={this.addReview}>submit</button>
                         </fieldset>
-
-                        
-
                         <fieldset>
                             <legend>Other Reviews: </legend>
                             <b>
                                 Average Rate :
                             </b>
-                            <span style={{fontSize:"15px",color:"darkorange",marginLeft:"10px"}}> 4.5&#9733; </span>
+                            <span style={{fontSize:"15px",color:"darkorange",marginLeft:"10px"}}> {this.props.app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(this.props.app.reviews.length==0?1:this.props.app.reviews.length)}&#9733; </span>
                             <br/>
 
                             <div style={{height:"10px"}}></div>
 
 
                             {
-                         //       this.props.app.reviews.map((reviewAndRating)=>{
-                       //           <Review name={reviewAndRating.name} rating={reviewAndRating.rating} review={reviewAndRating.review}></Review>
-                       //         })
+                                this.props.app.reviews.map((reviewAndRating,index)=>(
+                                        <Review key={`${reviewAndRating.name}-${index}`} name={reviewAndRating.name} rating={parseInt(reviewAndRating.rating)} review={reviewAndRating.review}></Review>
+                                )).reverse()
                             }
 
-                            <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>mohammad badir</b><br/>
-                            <Rating name="read-only" size='small' value={5} readOnly /> <br/>
-                            adsad asdsaf 
-                            fd fsdfsdfsdf fsd fsdfsdfsdffsadf
-                            afdsd sdsa
-                            asd 
-                            <hr/>
-
-                            <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>waseem sarsour</b><br/>
-                            <Rating name="read-only" size='small' value={3} readOnly /> <br/>
-                            adsad asdsaf 
-                            fd fsdfsdfsdf fsd fsdfsdfsdffsadf
-                            afdsd sdsa
-                            asd 
-                            <hr/>      
-
-                            <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>alex</b><br/>
-                            <Rating name="read-only" size='small' value={1} readOnly /> <br/>
-                            adsad asdsaf 
-                            fd fsdfsdfsdf fsd fsdfsdfsdffsadf
-                            afdsd sdsa
-                            asd 
-
                             <div style={{height:"25px"}}></div>
-
                         </fieldset>
                         <div style={{height:"40px"}}></div>
 
