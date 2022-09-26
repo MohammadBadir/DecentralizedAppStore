@@ -64,7 +64,7 @@ class AppPage extends React.Component{
   addReview=async()=>{
     await this.props.addReview(this.props.app.id,this.state.ratingInput,this.state.reviewInput,document.getElementById("anonymousCheckbox").checked)
     this.setState({
-        ratingInput : '',
+        ratingInput : 0,
         reviewInput : "",
     });
   }
