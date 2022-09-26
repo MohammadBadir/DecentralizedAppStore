@@ -161,7 +161,7 @@ class AppPage extends React.Component{
                             <b>
                                 Average Rate :
                             </b>
-                            <span style={{fontSize:"15px",color:"darkorange",marginLeft:"10px"}}> {this.props.app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(this.props.app.reviews.length==0?1:this.props.app.reviews.length)}&#9733; </span>
+                            <span style={{fontSize:"15px",color:"darkorange",marginLeft:"10px"}}> {(this.props.app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(this.props.app.reviews.length==0?1:this.props.app.reviews.length)).toFixed(1)}&#9733; </span>
                             <br/>
 
                             <div style={{height:"10px"}}></div>
