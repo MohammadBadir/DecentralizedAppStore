@@ -216,6 +216,7 @@ class App extends React.Component {
       }
 
       const counter = await contract.methods.appsCount().call();
+
       let appsTemp=[];
       for (var i = 1; i <= counter; i++) {
         const app = await contract.methods.apps(i).call();
@@ -255,9 +256,10 @@ class App extends React.Component {
       let uploadedAppsTemp=[];
       let iter=0;
       while(myUploadedApps[iter]!=undefined){
-        const app = await contract.methods.apps(myUploadedApps[iter]).call();
-        const reviews = await contract.methods.getReviews(app.id).call();
-        app.reviews=reviews;
+   //     const app = await contract.methods.apps(myUploadedApps[iter]).call();
+   //     const reviews = await contract.methods.getReviews(app.id).call();
+  //      app.reviews=reviews;
+        let app= this.state.apps[myUploadedApps[iter]-1];
         uploadedAppsTemp=[...uploadedAppsTemp,app]
         iter++;
       }
