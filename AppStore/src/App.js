@@ -329,9 +329,9 @@ class App extends React.Component {
   }
 
 
-  addNewApp = async (appName,appCategory,AppDescription,appPrice)=>{
+  addNewApp = async (appName,appCategory,AppDescription,appPrice,appLogoHash)=>{
 
-    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice).send({from : this.state.account});
+    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,appLogoHash).send({from : this.state.account});
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
     const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
     newApp.reviews=reviews;

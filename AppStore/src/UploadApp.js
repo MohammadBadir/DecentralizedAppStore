@@ -1,8 +1,40 @@
 import React from 'react';
 import Web3 from 'web3';
+//import {ipfs} from './IPFS.js';
+//import {ipfs} from './IPFS';
+//import {create} from 'ipfs-http-client';
+//import { create } from 'ipfs-http-client'
+
+import fleekStorage from '@fleekhq/fleek-storage-js'
+const FLEEK_API_KEY='EvylP8PA/dw/vRh5P7ntRQ==';
+const FLEEK_API_SECRET='4nZd2m+n3HB9U+iKP8629yetFoipqZKjjrVW4/L3VaM=';
+
+// //from here
+
+// const ipfsClient = require("ipfs-http-client");
+
+// const PROJECT_ID='7XZ3XYuZYoVy2d26h9CA1Q==';
+// const PROJECT_SECRET='k5gQeLlI2FakZmZ1ycDAyQ==';
+
+// const auth = 'Basic ' + Buffer.from(PROJECT_ID + ':' + PROJECT_SECRET).toString('base64');
+
+
+//   const ipfs = ipfsClient({
+//     host: 'ipfs.fleek.co',
+//     port: 5001,
+//     protocol: 'https',
+//     headers: {
+//       authorization:  auth
+//     }
+//   })
+// //till here
+
+//const ipfsClient = require('ipfs-http-client');
+//var ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'http' })
+
+let appLogoHash='';
 
 class UploadApp extends React.Component{
-
   constructor(props){
     super(props);
     this.state={
@@ -10,7 +42,9 @@ class UploadApp extends React.Component{
       categoryInput : "Education",
       appDescriptionInput : "",
       appNameEmpty : false,
-      appPriceInput: '0'
+      appPriceInput: '0',
+      buffer: null,
+    //  appLogoHash : ''
     };
   }
 
@@ -26,7 +60,8 @@ class UploadApp extends React.Component{
       appNameEmpty:false
     })
    }
-    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput)
+   await this.uploadImage()
+    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,appLogoHash)
     this.setState({
       appNameInput : "",
       appDescriptionInput : "",
@@ -68,12 +103,12 @@ class UploadApp extends React.Component{
 
               <label>
                 <b>App logo</b>
-                <input type="file" id='appLogoInput'/>
+                <input type="file" onChange={this.inputLogoChangeHandle} id='appLogoInput'/>
+            {/*    <button onClick={this.uploadImage}>uploadimage</button> */}
               </label>
-
+              {/*    <img src={this.state.appLogoHash==''?'':`https://ipfs.fleek.co/ipfs/${this.state.appLogoHash}`} alt=""/><br/> */}
                <input className="submitButtons" type="submit" value="Submit" />
             </form>
-
         </div>
          );
     }
@@ -82,6 +117,45 @@ class UploadApp extends React.Component{
       this.setState({
         [event.target.name] : event.target.value
       });
+    }
+
+    inputLogoChangeHandle = (event) => {
+      event.preventDefault()
+      const file = event.target.files[0]
+      if(file=='' || file== undefined || file==null) return
+      const reader = new window.FileReader()
+      reader.readAsArrayBuffer(file)
+      reader.onloadend = () => {
+        this.setState({ buffer: Buffer(reader.result) })
+      }
+    }
+
+    uploadImage =async ()=>{
+      console.log('buffer from upload image',this.state.buffer)
+      const buckets = await fleekStorage.listBuckets({
+        apiKey: FLEEK_API_KEY,
+        apiSecret: FLEEK_API_SECRET,
+      })
+      console.log('buckets',buckets)
+      const uploadResult = await fleekStorage.upload({
+        apiKey: FLEEK_API_KEY,
+        apiSecret: FLEEK_API_SECRET,
+        key: `file-${new Date().getTime()}`,
+        data: this.state.buffer,
+      });
+      console.log('hash =',uploadResult.hash)
+      appLogoHash=uploadResult.hash;
+    //  this.setState({appLogoHash : uploadResult.hash})
+  //     await ipfs.add(this.state.buffer, (error, result) => {
+  //       if(error) {
+  //         console.error(error)
+  //         return
+  //       }
+  //    //   this.simpleStorageInstance.set(result[0].hash, { from: this.state.account }).then((r) => {
+  //         return this.setState({ appLogoHash: result[0].hash })
+  //         console.log('ifpsHash', this.state.appLogoHash)
+  // //      })
+  //     })
     }
 
     selectCategory = (event) => {

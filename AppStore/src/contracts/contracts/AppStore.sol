@@ -16,6 +16,7 @@ contract AppStore {
     string category;
     string appDescription;
     string appDeveloper;
+    string appLogoHash;
     uint price;
     ReviewAndRating [] reviews;
   }
@@ -38,13 +39,14 @@ contract AppStore {
     return userDictionary[msg.sender].userName;
   }
 
-  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price) public {
+  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price,string memory _appLogoHash) public {
     appsCount++;
   //  apps[appsCount]= AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName ,price);
     apps[appsCount].id=appsCount;
     apps[appsCount].appName=_appName;
     apps[appsCount].category=_category;
     apps[appsCount].appDescription=_appDescription;
+    apps[appsCount].appLogoHash=_appLogoHash;
     apps[appsCount].appDeveloper=userDictionary[msg.sender].userName;
     apps[appsCount].price=price;
     userDictionary[msg.sender].uploadedApps.push(appsCount);

@@ -29,7 +29,7 @@ class MyApps extends React.Component{
                     <Grid  key={`${app.appName}-${index}`} item xs={4}>
                     <Card style={{height:"65px", width:"300px",padding:"10px", border: "none", boxShadow: "none" }}className="appCard" onClick={()=>{this.props.openAppPage(app.id)}}>
                       <div style={{display:"inline-block",verticalAlign:"top"}}>
-                        <img src={dappImg} width={50}height={52}/>
+                        <img src={`https://ipfs.fleek.co/ipfs/${app.appLogoHash}`} width={50}height={52}/>
                       </div>
                       <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",marginTop:"-8px"}}>
                         <b style={{fontSize:"18px"}}>{app.appName}</b><br/>

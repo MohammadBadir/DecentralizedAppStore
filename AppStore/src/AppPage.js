@@ -77,7 +77,7 @@ class AppPage extends React.Component{
               <div style={{marginTop:"20px",marginLeft:"20px"}}>
                     <button className='categotyButton' onClick={this.props.backToApps}>go back</button>
                     <div style={{marginTop:"15px"}}>
-                        <img className="app-image-parent" style={{marginBottom:"-20px"}} src={dappImg} width={130}height={130}/> 
+                        <img className="app-image-parent" style={{marginBottom:"-20px"}} src={`https://ipfs.fleek.co/ipfs/${this.props.app.appLogoHash}`} width={130}height={130}/> 
                         <h1 style={{marginBottom:"0px"}}className="app-image-child">                   
                              {this.props.app.appName}  
                         </h1>
