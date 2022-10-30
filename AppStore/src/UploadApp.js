@@ -143,7 +143,7 @@ class UploadApp extends React.Component{
         key: `file-${new Date().getTime()}`,
         data: this.state.buffer,
       });
-      console.log('hash =',uploadResult.hash)
+      console.log('hash =',uploadResult)
       appLogoHash=uploadResult.hash;
     //  this.setState({appLogoHash : uploadResult.hash})
   //     await ipfs.add(this.state.buffer, (error, result) => {

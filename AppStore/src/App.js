@@ -117,7 +117,8 @@ class App extends React.Component {
         continue;
       }
       let temp = parseInt(stuff.substring(start, end));
-      let temp2 = await this.state.appStoreContract.methods.apps(temp).call();
+   //   let temp2 = await this.state.appStoreContract.methods.apps(temp).call();
+      let temp2= this.state.apps[temp-1];
       things.push(temp2);
       start = end + 1
       end = end + 1
@@ -161,7 +162,9 @@ class App extends React.Component {
     console.log("--Generating new download code after adding app with Id: " + appId + "--");
 
     //Add app to downloadedAppsArray
-    const newApp = await this.state.appStoreContract.methods.apps(appId).call();
+//    const newApp = await this.state.appStoreContract.methods.apps(appId).call();
+    let newApp= this.state.apps[appId-1];
+
     let updatedList = [...this.state.downloadedApps, newApp];
     this.setState(oldState=>({
       downloadedApps : updatedList
