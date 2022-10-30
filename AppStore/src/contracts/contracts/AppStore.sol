@@ -16,6 +16,7 @@ contract AppStore {
     string category;
     string appDescription;
     string appDeveloper;
+    address developerAddress;
     string appLogoHash;
     uint price;
     ReviewAndRating [] reviews;
@@ -35,10 +36,6 @@ contract AppStore {
   mapping(uint => AppData) public apps;
   mapping(address  => UserData) public userDictionary;
 
-  function getUserName()public view returns(string memory){
-    return userDictionary[msg.sender].userName;
-  }
-
   function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price,string memory _appLogoHash) public {
     appsCount++;
   //  apps[appsCount]= AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName ,price);
@@ -49,6 +46,7 @@ contract AppStore {
     apps[appsCount].appLogoHash=_appLogoHash;
     apps[appsCount].appDeveloper=userDictionary[msg.sender].userName;
     apps[appsCount].price=price;
+    apps[appsCount].developerAddress=msg.sender;
     userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 
@@ -57,6 +55,17 @@ contract AppStore {
     require(bytes(userDictionary[msg.sender].userName).length==0,"username is already set");
     userDictionary[msg.sender].userName=userName;
     userDictionary[msg.sender].downloadCode=initDownloadCode;
+  }
+
+
+  function addReview(uint _appid,uint _rating,string memory _review,string memory _userName) public {
+ //   require(msg.sender!=apps[_appid].developerAddress,'you cannot rate your app!');
+    ReviewAndRating memory NewReview=ReviewAndRating(_userName  , _rating, _review);
+    apps[_appid].reviews.push(NewReview);
+  }
+
+  function getUserName()public view returns(string memory){
+    return userDictionary[msg.sender].userName;
   }
 
   function getUploadedApps() public view returns(uint[] memory){
@@ -72,10 +81,5 @@ contract AppStore {
 
   function updateDownloadCode(string memory newCode) public {
     userDictionary[msg.sender].downloadCode = newCode;
-  }
-
-  function addReview(uint _appid,uint _rating,string memory _review,string memory _userName) public {
-      ReviewAndRating memory NewReview=ReviewAndRating(_userName  , _rating, _review);
-      apps[_appid].reviews.push(NewReview);
   }
 }

@@ -70,8 +70,8 @@ class AppPage extends React.Component{
   }
 
     render(){
-        console.log(JSON.stringify(this.props.app, null, 4));
-        console.log(JSON.stringify(this.props.app.reviews, null, 4));
+    //    console.log(JSON.stringify(this.props.app, null, 4));
+    //    console.log(JSON.stringify(this.props.app.reviews, null, 4));
       return (
             <div> 
               <div style={{marginTop:"20px",marginLeft:"20px"}}>

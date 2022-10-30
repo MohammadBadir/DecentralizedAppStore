@@ -161,14 +161,17 @@ class App extends React.Component {
   async getUpdatedDownloadCode(appId){
     console.log("--Generating new download code after adding app with Id: " + appId + "--");
 
+
     //Add app to downloadedAppsArray
 //    const newApp = await this.state.appStoreContract.methods.apps(appId).call();
-    let newApp= this.state.apps[appId-1];
 
+
+    let newApp= this.state.apps[appId-1]; 
     let updatedList = [...this.state.downloadedApps, newApp];
     this.setState(oldState=>({
-      downloadedApps : updatedList
+       downloadedApps : updatedList
     }));
+
 
     //Serialize
     let serialized = this.serialize(updatedList);
@@ -345,10 +348,26 @@ class App extends React.Component {
     }))
   }
 
+   getRPCErrorMessage=(err)=>{
+    var open = err.stack.indexOf('{')
+    var close = err.stack.lastIndexOf('}')
+    var j_s = err.stack.substring(open, close + 1);
+    var j = JSON.parse(j_s);
+    var reason = j.data[Object.keys(j.data)[0]].reason;
+    return reason;
+}
 
   addReview = async (appid, rating, review, isAnonymous)=>{
     const name=isAnonymous?'Anonymous':this.state.userName;
-    await this.state.appStoreContract.methods.addReview(appid,rating,review,name).send({from : this.state.account});
+    try {
+      await this.state.appStoreContract.methods.addReview(appid,rating,review,name).send({from : this.state.account});
+    }
+    catch(err) {
+    //  console.log(err); 
+     // alert(this.getRPCErrorMessage(JSON.parse(err)));
+     alert('you cannot review your app!');
+      return;
+    }
     const _apps=this.state.apps;
     _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:name,rating:rating,review:review}];
     this.setState({
@@ -373,6 +392,11 @@ class App extends React.Component {
   }
 
   downloadApp = async (appId) =>{
+
+    if(this.state.downloadedApps.map((app)=>app.id).includes(appId)){ // to avoid duplicates 
+      return;
+   }
+
     let newStr = await this.getUpdatedDownloadCode(appId);
 
     await this.state.appStoreContract.methods.updateDownloadCode(newStr).send({from : this.state.account});

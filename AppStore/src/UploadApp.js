@@ -132,11 +132,6 @@ class UploadApp extends React.Component{
 
     uploadImage =async ()=>{
       console.log('buffer from upload image',this.state.buffer)
-      const buckets = await fleekStorage.listBuckets({
-        apiKey: FLEEK_API_KEY,
-        apiSecret: FLEEK_API_SECRET,
-      })
-      console.log('buckets',buckets)
       const uploadResult = await fleekStorage.upload({
         apiKey: FLEEK_API_KEY,
         apiSecret: FLEEK_API_SECRET,
