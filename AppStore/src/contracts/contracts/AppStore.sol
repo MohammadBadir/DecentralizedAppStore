@@ -7,6 +7,7 @@ contract AppStore {
   //enum appCategory{ Education, Entertainment, News, Sports, Music, Shopping, Business}
   struct ReviewAndRating{
     string name;
+    address evaluaterAddress;
     uint rating;
     string review;
   }
@@ -25,7 +26,6 @@ contract AppStore {
   struct UserData {
     bool isInit;
     string userName;
-  
     string downloadCode;
     uint[] uploadedApps;
   }
@@ -37,8 +37,11 @@ contract AppStore {
   mapping(address  => UserData) public userDictionary;
 
   function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price,string memory _appLogoHash) public {
-    appsCount++;
   //  apps[appsCount]= AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName ,price);
+      for (uint i = 0; i < userDictionary[msg.sender].uploadedApps.length; i++) {
+        require(keccak256(bytes(apps[userDictionary[msg.sender].uploadedApps[i]].appName))!=keccak256(bytes(_appName)),'you already published an app with this name!');
+    }
+    appsCount++;
     apps[appsCount].id=appsCount;
     apps[appsCount].appName=_appName;
     apps[appsCount].category=_category;
@@ -50,17 +53,25 @@ contract AppStore {
     userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 
-  function registerUser(string memory userName, string memory initDownloadCode)public{
-    require(bytes(userName).length!=0,"username cannot be empty");
+  function isNewUser()public view returns(bool){
+    return !userDictionary[msg.sender].isInit;
+  } 
+
+  function registerUser(string memory _userName, string memory initDownloadCode)public{
+    require(bytes(_userName).length!=0,"username cannot be empty");
     require(bytes(userDictionary[msg.sender].userName).length==0,"username is already set");
-    userDictionary[msg.sender].userName=userName;
+    userDictionary[msg.sender].userName=_userName;
+    userDictionary[msg.sender].isInit=true;
     userDictionary[msg.sender].downloadCode=initDownloadCode;
   }
 
 
-  function addReview(uint _appid,uint _rating,string memory _review,string memory _userName) public {
- //   require(msg.sender!=apps[_appid].developerAddress,'you cannot rate your app!');
-    ReviewAndRating memory NewReview=ReviewAndRating(_userName  , _rating, _review);
+  function addReview(uint _appid,uint _rating,string memory _review,bool isAnonymous) public {
+    require(msg.sender!=apps[_appid].developerAddress,'you cannot review your app!');
+    for (uint i = 0; i < apps[_appid].reviews.length; i++) {
+        require(apps[_appid].reviews[i].evaluaterAddress!=msg.sender,'you can review only once!');
+    }
+    ReviewAndRating memory NewReview=ReviewAndRating(isAnonymous?'Anonymous':userDictionary[msg.sender].userName, msg.sender, _rating, _review);
     apps[_appid].reviews.push(NewReview);
   }
 

@@ -22,7 +22,7 @@ class App extends React.Component {
     this.categories=["Education", "Entertainment", "News", "Sports", "Music", "Shopping", "Business"];
     this.state={
       currentView: 0, // apps=0,myapps=1,downloaded=2,uploadapp=3...
-      appPageView:0,
+      appPageView:0, // the number indicates the app page to be displayed
       account : "",
       userName :'',
       appStoreContract : [],
@@ -212,14 +212,24 @@ class App extends React.Component {
         account :accounts[0],
         appStoreContract : contract,
       })
-      let userNameTemp=await contract.methods.getUserName().call();
+      let firstTime=await contract.methods.isNewUser().call();
+      console.log('firstTime',firstTime)
+      console.log('account',accounts[0])
       this.setState({
-        isFirstTime :userNameTemp==''? true : false,
-        userName : userNameTemp
-      })
-      if(userNameTemp==''){
+        isFirstTime :firstTime
+      });
+      if(firstTime==true){
         return;
       }
+      let userNameTemp=await contract.methods.getUserName().call();
+      this.setState({
+    //    isFirstTime :userNameTemp==''? true : false,
+        userName : userNameTemp
+      })
+      console.log('username',userNameTemp)
+   //   if(userNameTemp==''){
+  //      return;
+   //   }
 
       const counter = await contract.methods.appsCount().call();
 
@@ -272,7 +282,6 @@ class App extends React.Component {
       this.setState({
         uploadedApps : [...uploadedAppsTemp]
       });
-
       }
     load();
   }
@@ -290,24 +299,24 @@ class App extends React.Component {
   }
 
   render(){
-    if(this.state.appPageView!=0){
+     if(this.state.isFirstTime){
+      return ( 
+        <div>
+            <FirstTimeScreen updateUserName={this.updateUserName} toggleFirstTime={this.toggleFirstTime}/>
+        </div>
+      )
+    }else if(this.state.appPageView!=0){
       return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
              <AppPage addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
         </div>
        );
-    }else if(this.state.isFirstTime){
-      return ( 
-        <div>
-            <FirstTimeScreen updateUserName={this.updateUserName} toggleFirstTime={this.toggleFirstTime}/>
-        </div>
-      )
     }else if(this.state.currentView==0){
        return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
-             <AppsView   openAppPage={this.openAppPage} downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
+             <AppsView  openAppPage={this.openAppPage} downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
         </div>
        );
     }else if(this.state.currentView==1){
@@ -357,23 +366,22 @@ class App extends React.Component {
     return reason;
 }
 
-  addReview = async (appid, rating, review, isAnonymous)=>{
-    const name=isAnonymous?'Anonymous':this.state.userName;
-    try {
-      await this.state.appStoreContract.methods.addReview(appid,rating,review,name).send({from : this.state.account});
-    }
-    catch(err) {
-    //  console.log(err); 
-     // alert(this.getRPCErrorMessage(JSON.parse(err)));
-     alert('you cannot review your app!');
-      return;
-    }
-    const _apps=this.state.apps;
-    _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:name,rating:rating,review:review}];
-    this.setState({
-      apps : _apps
-    })
+addReview = async (appid, rating, review, _isAnonymous)=>{
+  try {
+    await this.state.appStoreContract.methods.addReview(appid,rating,review,_isAnonymous).send({from : this.state.account});
   }
+  catch(err) {
+  //  console.log(err); 
+   // alert(this.getRPCErrorMessage(JSON.parse(err)));
+   alert('you cannot review your app!');
+    return;
+  }
+  const _apps=this.state.apps;
+  _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:_isAnonymous?'Anonymous':this.state.userName,rating:rating,review:review}];
+  this.setState({
+    apps : _apps
+  })
+}
 
   changeView=(event)=>{
 
@@ -411,12 +419,12 @@ class App extends React.Component {
     // }));
   }
 
-  updateUserName =async (userName) => {
+  updateUserName =async (_userName) => {
     this.setState({
-      userName : userName
+      userName : _userName
     })
     let encryptedString = await this.generateInitialEncrypedString();
-    await this.state.appStoreContract.methods.registerUser(userName, encryptedString).send({from : this.state.account});
+    await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account});
   }
 
   toggleFirstTime = ()=>{

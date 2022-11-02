@@ -60,6 +60,7 @@ class UploadApp extends React.Component{
       appNameEmpty:false
     })
    }
+  // document.getElementById("submitAppBtn").disabled = true;
    await this.uploadImage()
     await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,appLogoHash)
     this.setState({
@@ -67,7 +68,9 @@ class UploadApp extends React.Component{
       appDescriptionInput : "",
       appPriceInput : '0'
     }); 
+    document.getElementById('appLogoInput').value= null;
     alert('app has been uploaded successfully')
+  //  document.getElementById("submitAppBtn").disabled = false;
   }
 
    render(){
@@ -107,7 +110,7 @@ class UploadApp extends React.Component{
             {/*    <button onClick={this.uploadImage}>uploadimage</button> */}
               </label>
               {/*    <img src={this.state.appLogoHash==''?'':`https://ipfs.fleek.co/ipfs/${this.state.appLogoHash}`} alt=""/><br/> */}
-               <input className="submitButtons" type="submit" value="Submit" />
+               <input  id="submitAppBtn" className="submitButtons" type="submit" value="Submit" />
             </form>
         </div>
          );
