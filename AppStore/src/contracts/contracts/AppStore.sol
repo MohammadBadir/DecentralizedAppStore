@@ -52,7 +52,7 @@ contract AppStore {
 
   function registerUser(string memory _userName, string memory initDownloadCode)public{
     require(bytes(_userName).length!=0,"username cannot be empty");
-    require(bytes(userDictionary[msg.sender].userName).length==0,"username is already set");
+    require(bytes(userDictionary[msg.sender].userName).length==0,'this account is already registered!');
     userDictionary[msg.sender].userName=_userName;
     userDictionary[msg.sender].isInit=true;
     userDictionary[msg.sender].downloadCode=initDownloadCode;
@@ -62,7 +62,7 @@ contract AppStore {
   function addReview(uint _appid,uint _rating,string memory _review,bool isAnonymous) public {
     require(msg.sender!=apps[_appid].developerAddress,'you cannot review your app!');
     for (uint i = 0; i < apps[_appid].reviews.length; i++) {
-        require(apps[_appid].reviews[i].evaluaterAddress!=msg.sender,'you can review only once!');
+        require(apps[_appid].reviews[i].evaluaterAddress!=msg.sender,'you can review this app only once!');
     }
     ReviewAndRating memory NewReview=ReviewAndRating(isAnonymous?'Anonymous':userDictionary[msg.sender].userName, msg.sender, _rating, _review);
     apps[_appid].reviews.push(NewReview);

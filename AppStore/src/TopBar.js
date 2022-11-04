@@ -11,7 +11,7 @@ class TopBar extends React.Component{
            <button className='topButtons' data-index={1} onClick={this.props.changeView}>My Apps</button>
            <button className='topButtons' data-index={2} onClick={this.props.changeView}>Downloaded</button>
            <button className='topButtons' data-index={3} onClick={this.props.changeView}>Upload App</button>
-            <span id="accountNumber">Your account is: {this.props.account}</span>
+            <span  style={{fontSize:"18px"}}  id="accountNumber">Welcome, {this.props.userName}</span>
            </div>
         </div>
          );

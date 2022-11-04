@@ -69,7 +69,6 @@ class UploadApp extends React.Component{
       appPriceInput : '0'
     }); 
     document.getElementById('appLogoInput').value= null;
-    alert('app has been uploaded successfully')
   //  document.getElementById("submitAppBtn").disabled = false;
   }
 

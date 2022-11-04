@@ -42,6 +42,7 @@ class App extends React.Component {
       const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
       const accounts = await web3.eth.requestAccounts();
       const contract = new web3.eth.Contract(APP_STORE_ABI, APP_STORE_ADDRESS);
+      web3.eth.handleRevert=true;
       this.setState({
         account :accounts[0],
         appStoreContract : contract,
@@ -285,7 +286,7 @@ class App extends React.Component {
 
     return encryptedString;
   }
-  
+
   backToApps = () => { 
     this.setState({
       appPageView : 0
@@ -308,36 +309,35 @@ class App extends React.Component {
     }else if(this.state.appPageView!=0){
       return (
         <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
              <AppPage addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
         </div>
        );
     }else if(this.state.currentView==0){
        return (
         <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
-             <b style={{marginLeft:"15px",fontSize:"22px"}}>welcome,  {this.state.userName}</b>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
              <AppsView  openAppPage={this.openAppPage} downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
         </div>
        );
     }else if(this.state.currentView==1){
       return (
         <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
              <MyApps openAppPage={this.openAppPage} uploadedApps={this.state.uploadedApps}/>
         </div>
        );
     }else if(this.state.currentView==2){
       return (
         <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <TopBar account={this.state.account} userName={this.state.userName}  changeView={this.changeView}/>
              <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.downloadedApps}/>
         </div>
        );
     }else if(this.state.currentView==3){
       return (
         <div>
-             <TopBar account={this.state.account} changeView={this.changeView}/>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
              <UploadApp categories={this.categories} addNewApp={this.addNewApp} uploadedApps={this.state.uploadedApps}/>
         </div>
        );
@@ -346,42 +346,67 @@ class App extends React.Component {
 
 
   addNewApp = async (appName,appCategory,AppDescription,appPrice,appLogoHash)=>{
-
-    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,appLogoHash).send({from : this.state.account});
-    const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
-    const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
-    newApp.reviews=reviews;
-    this.setState(oldState => ({
-      apps : [...oldState.apps,newApp],
-      appsCount : oldState.appsCount+1,
-      uploadedApps : [...oldState.uploadedApps,newApp]
-    }))
+    try{
+      await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,appLogoHash).send({from : this.state.account});
+      const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
+      const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
+      newApp.reviews=reviews;
+      this.setState(oldState => ({
+        apps : [...oldState.apps,newApp],
+        appsCount : oldState.appsCount+1,
+        uploadedApps : [...oldState.uploadedApps,newApp]
+      }))
+      alert('app has been uploaded successfully')
+    }catch(err){
+      const appWithSameNameExist='you already published an app with this name!';
+      if(err.message.includes(appWithSameNameExist)){
+        alert(appWithSameNameExist);
+      }else if(err.message.includes('User denied transaction')){
+      }else{
+        alert('an error occured')
+      }
+    }
   }
 
    getRPCErrorMessage=(err)=>{
-    var open = err.stack.indexOf('{')
-    var close = err.stack.lastIndexOf('}')
-    var j_s = err.stack.substring(open, close + 1);
-    var j = JSON.parse(j_s);
-    var reason = j.data[Object.keys(j.data)[0]].reason;
+    // var open = err.stack.indexOf('{')
+    // var close = err.stack.lastIndexOf('}')
+    // var j_s = err.stack.substring(open, close + 1);
+    // var j = JSON.parse(j_s);
+    // var reason = j.data[Object.keys(j.data)[0]].reason;
+    // return reason;
+
+    const data = err.data;
+    const txHash = Object.keys(data)[0]; // TODO improve
+    const reason = data[txHash].reason;
+    console.log("reason2",reason)
     return reason;
 }
 
 addReview = async (appid, rating, review, _isAnonymous)=>{
   try {
     await this.state.appStoreContract.methods.addReview(appid,rating,review,_isAnonymous).send({from : this.state.account});
+    const _apps=this.state.apps;
+    _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:_isAnonymous?'Anonymous':this.state.userName,rating:rating,review:review}];
+    this.setState({
+      apps : _apps
+    })
   }
   catch(err) {
-  //  console.log(err); 
-   // alert(this.getRPCErrorMessage(JSON.parse(err)));
-   alert('you cannot review your app!');
+    const canReviewOnce='you can review this app only once!';
+    const cannotReviewSelf='you cannot review your app!';
+    if(err.message.includes(canReviewOnce)){
+      alert(canReviewOnce);
+    }else if(err.message.includes(cannotReviewSelf)){
+      alert(cannotReviewSelf);
+    }else if(err.message.includes('User denied transaction')){
+    }else{
+      alert('an error occured')
+    }
+ // console.log("reason",err.message)
+  //alert(this.getRPCErrorMessage(err));
     return;
   }
-  const _apps=this.state.apps;
-  _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:_isAnonymous?'Anonymous':this.state.userName,rating:rating,review:review}];
-  this.setState({
-    apps : _apps
-  })
 }
 
   changeView=(event)=>{
@@ -425,7 +450,21 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
       userName : _userName
     })
     let encryptedString = await this.generateInitialEncrypedString();
-    await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account});
+    await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account}).catch(
+      (err)=>{
+        const userNameNotEmpty='username cannot be empty!';
+        const alreadyRegistered='this account is already registered!';
+        if(err.message.includes(alreadyRegistered)){
+          alert(alreadyRegistered);
+        }else if(err.message.includes(userNameNotEmpty)){
+          alert(userNameNotEmpty);
+        }else if(err.message.includes('User denied transaction')){
+        }else{
+          alert('an error occured')
+        }
+      }
+    );
+    
   }
 
   toggleFirstTime = ()=>{
