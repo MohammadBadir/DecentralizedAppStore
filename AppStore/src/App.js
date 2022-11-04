@@ -135,7 +135,7 @@ class App extends React.Component {
     console.log('** Fetching Downloaded App List **');
 
     //Load download code string from blockchain and convert to buffer
-    let dCodeStr = await contract.methods.getDownloadCode().call();
+    let dCodeStr = await contract.methods.getDownloadCode(this.state.account).call();
     let dCodeBuffer = Buffer.from(JSON.parse(dCodeStr).data);
 
     console.log("Encrypted String: " + dCodeStr)
@@ -212,7 +212,7 @@ class App extends React.Component {
         account :accounts[0],
         appStoreContract : contract,
       })
-      let firstTime=await contract.methods.isNewUser().call();
+      let firstTime=await contract.methods.isNewUser(accounts[0]).call();
       console.log('firstTime',firstTime)
       console.log('account',accounts[0])
       this.setState({
@@ -221,7 +221,7 @@ class App extends React.Component {
       if(firstTime==true){
         return;
       }
-      let userNameTemp=await contract.methods.getUserName().call();
+      let userNameTemp=await contract.methods.getUserName(accounts[0]).call();
       this.setState({
     //    isFirstTime :userNameTemp==''? true : false,
         userName : userNameTemp
@@ -268,7 +268,7 @@ class App extends React.Component {
       //   downloadedApps : [...downloadedAppsTemp]
       // });
 
-      let myUploadedApps = await contract.methods.getUploadedApps().call();
+      let myUploadedApps = await contract.methods.getUploadedApps(accounts[0]).call();
       let uploadedAppsTemp=[];
       let iter=0;
       while(myUploadedApps[iter]!=undefined){

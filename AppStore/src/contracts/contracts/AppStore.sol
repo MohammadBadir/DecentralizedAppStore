@@ -3,13 +3,16 @@ pragma solidity >=0.4.22 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 contract AppStore {
-  uint public appsCount = 0; // state variable
-  //enum appCategory{ Education, Entertainment, News, Sports, Music, Shopping, Business}
-  struct ReviewAndRating{
-    string name;
-    address evaluaterAddress;
-    uint rating;
-    string review;
+
+  mapping(uint => AppData) public apps;
+  mapping(address  => UserData) public userDictionary;
+  uint public appsCount = 0; 
+
+  struct UserData {
+    bool isInit;
+    string userName;
+    string downloadCode;
+    uint[] uploadedApps;
   }
   struct AppData {
     uint id;
@@ -23,21 +26,14 @@ contract AppStore {
     ReviewAndRating [] reviews;
   }
 
-  struct UserData {
-    bool isInit;
-    string userName;
-    string downloadCode;
-    uint[] uploadedApps;
+  struct ReviewAndRating{
+    string name;
+    address evaluaterAddress;
+    uint rating;
+    string review;
   }
-  
-  constructor() public {
-  }
-  
-  mapping(uint => AppData) public apps;
-  mapping(address  => UserData) public userDictionary;
 
   function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price,string memory _appLogoHash) public {
-  //  apps[appsCount]= AppData(appsCount, _appName, _category, _appDescription,userDictionary[msg.sender].userName ,price);
       for (uint i = 0; i < userDictionary[msg.sender].uploadedApps.length; i++) {
         require(keccak256(bytes(apps[userDictionary[msg.sender].uploadedApps[i]].appName))!=keccak256(bytes(_appName)),'you already published an app with this name!');
     }
@@ -53,9 +49,6 @@ contract AppStore {
     userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 
-  function isNewUser()public view returns(bool){
-    return !userDictionary[msg.sender].isInit;
-  } 
 
   function registerUser(string memory _userName, string memory initDownloadCode)public{
     require(bytes(_userName).length!=0,"username cannot be empty");
@@ -75,16 +68,24 @@ contract AppStore {
     apps[_appid].reviews.push(NewReview);
   }
 
-  function getUserName()public view returns(string memory){
-    return userDictionary[msg.sender].userName;
+  function isNewUser(address _user)public view returns(bool){
+    //return !userDictionary[msg.sender].isInit;
+    return !userDictionary[_user].isInit;
+  } 
+  function getUserName(address _user)public view returns(string memory){
+  //  return userDictionary[msg.sender].userName;
+    return userDictionary[_user].userName;
   }
 
-  function getUploadedApps() public view returns(uint[] memory){
-    return userDictionary[msg.sender].uploadedApps;
+  function getUploadedApps(address _user) public view returns(uint[] memory){
+  //  return userDictionary[msg.sender].uploadedApps;
+    return userDictionary[_user].uploadedApps;
+
   }
 
-  function getDownloadCode() public view returns(string memory){
-    return userDictionary[msg.sender].downloadCode;
+  function getDownloadCode(address _user) public view returns(string memory){
+    //return userDictionary[msg.sender].downloadCode;
+    return userDictionary[_user].downloadCode;
   }
     function getReviews(uint appid) public view returns(ReviewAndRating [] memory ){
     return apps[appid].reviews;
