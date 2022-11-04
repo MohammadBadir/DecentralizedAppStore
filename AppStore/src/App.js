@@ -55,9 +55,7 @@ class App extends React.Component {
       this.setState({
         isFirstTime :firstTime
       });
-      if(firstTime==true){
-        return;
-      }
+
       let userNameTemp=await contract.methods.getUserName(accounts[0]).call();
       this.setState({
         userName : userNameTemp
@@ -77,6 +75,10 @@ class App extends React.Component {
         apps : [...appsTemp],
         appsCount : parseInt(counter),
       });
+
+      if(firstTime==true){
+        return;
+      }
 
       this.initDownloadList(contract);
 
