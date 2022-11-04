@@ -42,6 +42,9 @@ class App extends React.Component {
       const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
       const accounts = await web3.eth.requestAccounts();
       const contract = new web3.eth.Contract(APP_STORE_ABI, APP_STORE_ADDRESS);
+      window.ethereum.on('accountsChanged', function (newAccount) { // when switching metamask accounts => reload the page
+        window.location.reload();
+      }) 
       web3.eth.handleRevert=true;
       this.setState({
         account :accounts[0],
@@ -112,11 +115,6 @@ class App extends React.Component {
       this.setState({
         uploadedApps : [...uploadedAppsTemp]
       });
-
-
-      window.ethereum.on('accountsChanged', function (newAccount) { // when switching metamask accounts => reload the page
-        window.location.reload();
-      }) 
       }
     load();
   }
