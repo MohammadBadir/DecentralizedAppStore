@@ -37,6 +37,89 @@ class App extends React.Component {
 
   }
 
+  componentDidMount(){
+     const load = async ()=>{
+      const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
+      const accounts = await web3.eth.requestAccounts();
+      const contract = new web3.eth.Contract(APP_STORE_ABI, APP_STORE_ADDRESS);
+      this.setState({
+        account :accounts[0],
+        appStoreContract : contract,
+      })
+      let firstTime=await contract.methods.isNewUser(accounts[0]).call();
+      console.log('account',accounts[0])
+      this.setState({
+        isFirstTime :firstTime
+      });
+      if(firstTime==true){
+        return;
+      }
+      let userNameTemp=await contract.methods.getUserName(accounts[0]).call();
+      this.setState({
+        userName : userNameTemp
+      })
+      console.log('username',userNameTemp)
+
+      const counter = await contract.methods.appsCount().call();
+
+      let appsTemp=[];
+      for (var i = 1; i <= counter; i++) {
+        const app = await contract.methods.apps(i).call();
+        const reviews = await contract.methods.getReviews(app.id).call();
+        app.reviews=reviews;
+        appsTemp=[...appsTemp,app]
+      }
+      this.setState({
+        apps : [...appsTemp],
+        appsCount : parseInt(counter),
+      });
+
+      this.initDownloadList(contract);
+
+      // //this.downloadCode = "hi";
+      // let dCode = await contract.methods.getDownloadCode().call();
+      // //console.log("hey" + dCode);
+      // //console.log(this.state.downloadCode+"A");
+      // this.setState({
+      //   downloadCode: dCode
+      // });
+      // console.log(this.state.downloadCode+"AA");
+      //console.log(this.downloadCode + "A");
+      // let mydownloadedApps = await contract.methods.getDownloadedApps().call();
+      // let downloadedAppsTemp=[];
+      // let iterator=0;
+      // while(mydownloadedApps[iterator]!=undefined){
+      //   const app = await contract.methods.apps(mydownloadedApps[iterator]).call();
+      //   downloadedAppsTemp=[...downloadedAppsTemp,app]
+      //   iterator++;
+      // }
+      // this.setState({
+      //   downloadedApps : [...downloadedAppsTemp]
+      // });
+
+      let myUploadedApps = await contract.methods.getUploadedApps(accounts[0]).call();
+      let uploadedAppsTemp=[];
+      let iter=0;
+      while(myUploadedApps[iter]!=undefined){
+   //     const app = await contract.methods.apps(myUploadedApps[iter]).call();
+   //     const reviews = await contract.methods.getReviews(app.id).call();
+  //      app.reviews=reviews;
+        let app= this.state.apps[myUploadedApps[iter]-1];
+        uploadedAppsTemp=[...uploadedAppsTemp,app]
+        iter++;
+      }
+      this.setState({
+        uploadedApps : [...uploadedAppsTemp]
+      });
+
+
+      window.ethereum.on('accountsChanged', function (newAccount) { // when switching metamask accounts => reload the page
+        window.location.reload();
+      }) 
+      }
+    load();
+  }
+
   intToChar() {
     let someInt = Math.floor(Math.random() * 71) + 58;
     return String.fromCharCode(someInt);
@@ -202,90 +285,7 @@ class App extends React.Component {
 
     return encryptedString;
   }
-
-  componentDidMount(){
-     const load = async ()=>{
-      const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
-      const accounts = await web3.eth.requestAccounts();
-      const contract = new web3.eth.Contract(APP_STORE_ABI, APP_STORE_ADDRESS);
-      this.setState({
-        account :accounts[0],
-        appStoreContract : contract,
-      })
-      let firstTime=await contract.methods.isNewUser(accounts[0]).call();
-      console.log('firstTime',firstTime)
-      console.log('account',accounts[0])
-      this.setState({
-        isFirstTime :firstTime
-      });
-      if(firstTime==true){
-        return;
-      }
-      let userNameTemp=await contract.methods.getUserName(accounts[0]).call();
-      this.setState({
-    //    isFirstTime :userNameTemp==''? true : false,
-        userName : userNameTemp
-      })
-      console.log('username',userNameTemp)
-   //   if(userNameTemp==''){
-  //      return;
-   //   }
-
-      const counter = await contract.methods.appsCount().call();
-
-      let appsTemp=[];
-      for (var i = 1; i <= counter; i++) {
-        const app = await contract.methods.apps(i).call();
-        const reviews = await contract.methods.getReviews(app.id).call();
-        app.reviews=reviews;
-        appsTemp=[...appsTemp,app]
-      }
-      this.setState({
-        apps : [...appsTemp],
-        appsCount : parseInt(counter),
-      });
-
-      this.initDownloadList(contract);
-
-      // //this.downloadCode = "hi";
-      // let dCode = await contract.methods.getDownloadCode().call();
-      // //console.log("hey" + dCode);
-      // //console.log(this.state.downloadCode+"A");
-      // this.setState({
-      //   downloadCode: dCode
-      // });
-      // console.log(this.state.downloadCode+"AA");
-      //console.log(this.downloadCode + "A");
-      // let mydownloadedApps = await contract.methods.getDownloadedApps().call();
-      // let downloadedAppsTemp=[];
-      // let iterator=0;
-      // while(mydownloadedApps[iterator]!=undefined){
-      //   const app = await contract.methods.apps(mydownloadedApps[iterator]).call();
-      //   downloadedAppsTemp=[...downloadedAppsTemp,app]
-      //   iterator++;
-      // }
-      // this.setState({
-      //   downloadedApps : [...downloadedAppsTemp]
-      // });
-
-      let myUploadedApps = await contract.methods.getUploadedApps(accounts[0]).call();
-      let uploadedAppsTemp=[];
-      let iter=0;
-      while(myUploadedApps[iter]!=undefined){
-   //     const app = await contract.methods.apps(myUploadedApps[iter]).call();
-   //     const reviews = await contract.methods.getReviews(app.id).call();
-  //      app.reviews=reviews;
-        let app= this.state.apps[myUploadedApps[iter]-1];
-        uploadedAppsTemp=[...uploadedAppsTemp,app]
-        iter++;
-      }
-      this.setState({
-        uploadedApps : [...uploadedAppsTemp]
-      });
-      }
-    load();
-  }
-
+  
   backToApps = () => { 
     this.setState({
       appPageView : 0
@@ -316,6 +316,7 @@ class App extends React.Component {
        return (
         <div>
              <TopBar account={this.state.account} changeView={this.changeView}/>
+             <b style={{marginLeft:"15px",fontSize:"22px"}}>welcome,  {this.state.userName}</b>
              <AppsView  openAppPage={this.openAppPage} downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
         </div>
        );

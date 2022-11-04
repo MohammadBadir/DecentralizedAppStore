@@ -75,7 +75,7 @@ class AppPage extends React.Component{
       return (
             <div> 
               <div style={{marginTop:"20px",marginLeft:"20px"}}>
-                    <button className='categotyButton' onClick={this.props.backToApps}>go back</button>
+                    <button className='GoBackBtn' onClick={this.props.backToApps}>go back</button>
                     <div style={{marginTop:"15px"}}>
                         <img className="app-image-parent" style={{marginBottom:"-20px"}} src={`https://ipfs.fleek.co/ipfs/${this.props.app.appLogoHash}`} width={130}height={130}/> 
                         <h1 style={{marginBottom:"0px"}}className="app-image-child">                   
@@ -161,7 +161,7 @@ class AppPage extends React.Component{
                             <b>
                                 Average Rate :
                             </b>
-                            <span style={{fontSize:"15px",color:"darkorange",marginLeft:"10px"}}> {(this.props.app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(this.props.app.reviews.length==0?1:this.props.app.reviews.length)).toFixed(1)}&#9733; </span>
+                            <span style={{fontSize:"15px",color:"darkorange",marginLeft:"10px"}}> {this.props.app.reviews.length==0?'-':(this.props.app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(this.props.app.reviews.length)).toFixed(1)}&#9733; </span>
                             <br/>
 
                             <div style={{height:"10px"}}></div>

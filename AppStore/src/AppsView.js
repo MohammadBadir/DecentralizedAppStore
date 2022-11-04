@@ -28,7 +28,7 @@ class AppsView extends React.Component{
     render(){
       return (
             <div> 
-              <div style={{marginTop:"15px",marginLeft:"15px"}}>
+              <div style={{marginTop:"10px",marginLeft:"15px"}}>
               <button id="defaultCategory" className="categoryButtons" key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
               {
               this.props.categories.map((category,index)=>(
@@ -56,7 +56,7 @@ class AppsView extends React.Component{
                     <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",marginTop:"-8px"}}>
                       <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
                       <span style={{fontSize:"14px"}}>{app.category}</span><br/>
-                      <span style={{fontSize:"14px",color:"darkorange"}}>{(app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(app.reviews.length==0?1:app.reviews.length)).toFixed(1)}&#9733;</span>
+                      <span style={{fontSize:"14px",color:"darkorange"}}>{app.reviews.length==0?'-':(app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(app.reviews.length)).toFixed(1)}&#9733;</span>
                     </div>
 
                     </Card>
