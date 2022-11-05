@@ -86,7 +86,7 @@ form{
   background-color: rgb(243,244,246);
 }
 
-#defaultCategory{
+#defaultCategory, #defaultCategory-downloaded,#defaultCategory-uploaded{
   color:white;
   background-color: rgb(111, 109, 227);
 }
@@ -327,11 +327,12 @@ fieldset > div > input , fieldset > div > label{
   cursor: pointer;
   display: inline-block;
   font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 550;
   line-height: 20px;
   list-style: none;
-  padding: 7px 16px;
+  padding: 5px 16px;
+  padding-left: 9px;
   position: relative;
   transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
   user-select: none;
@@ -365,8 +366,8 @@ fieldset > div > input , fieldset > div > label{
   outline: 1px transparent;
 }
 
-.GoBackBtn:before {
-  display: none;
+.GoBackBtn::before {
+  content:"\276E" ;
 }
 
 .GoBackBtn:-webkit-details-marker {

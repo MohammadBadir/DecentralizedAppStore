@@ -317,21 +317,21 @@ class App extends React.Component {
        return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <AppsView  openAppPage={this.openAppPage} downloadApp={this.downloadApp} appsCount={this.state.appsCount} categories={this.categories} apps={this.state.apps}/>
+             <AppsView  openAppPage={this.openAppPage}  apps={this.state.apps} categories={this.categories}/>
         </div>
        );
     }else if(this.state.currentView==1){
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <MyApps openAppPage={this.openAppPage} uploadedApps={this.state.uploadedApps}/>
+             <MyApps openAppPage={this.openAppPage} uploadedApps={this.state.uploadedApps} categories={this.categories}/>
         </div>
        );
     }else if(this.state.currentView==2){
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName}  changeView={this.changeView}/>
-             <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.downloadedApps}/>
+             <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.downloadedApps} categories={this.categories}/>
         </div>
        );
     }else if(this.state.currentView==3){

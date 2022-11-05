@@ -29,18 +29,17 @@ class AppsView extends React.Component{
       return (
             <div> 
               <div style={{marginTop:"10px",marginLeft:"15px"}}>
-              <button id="defaultCategory" className="categoryButtons" key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
-              {
-              this.props.categories.map((category,index)=>(
-                <button className="categoryButtons" key={category} data-category={category} onClick={this.changeCategoryView} style={{display:"inline-block",marginRight:"15px"}}>{category}</button>
-              ))
-              }
-              <input  className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
-             
+                <button id="defaultCategory" className="categoryButtons" key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
+                {
+                  this.props.categories.map((category,index)=>(
+                  <button className="categoryButtons" key={category} data-category={category} onClick={this.changeCategoryView} style={{display:"inline-block",marginRight:"15px"}}>{category}</button>
+                  ))
+                }
+                <input  className="searchInput" onChange={this.searchChange} value={this.state.searchedApp} placeholder='Search App'/>
               </div>
-              <Grid className="appsGrid" container spacing={5} rowSpacing={8} columnSpacing={0} style={{marginTop:"10px",marginLeft:"10px"}}>
+            <Grid className="appsGrid" container spacing={5} rowSpacing={8} columnSpacing={0} style={{marginTop:"10px",marginLeft:"10px"}}>
               {
-                this.props.apps.filter( 
+              this.props.apps.filter( 
                   (app)=>{
                   return (this.state.categoryView=="All" || app.category==this.state.categoryView)
                 }).filter(
@@ -55,15 +54,15 @@ class AppsView extends React.Component{
                     </div>
                     <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",marginTop:"-8px"}}>
                       <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
-                      <span style={{fontSize:"14px"}}>{app.category}</span><br/>
-                      <span style={{fontSize:"14px",color:"darkorange"}}>{app.reviews.length==0?'-':(app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(app.reviews.length)).toFixed(1)}&#9733;</span>
+                      <span style={{fontSize:"14px"}}>{app.appDeveloper}</span><br/>
+                      <span style={{fontSize:"14px",color:"darkorange"}}>{app.reviews.length==0?'':(app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(app.reviews.length)).toFixed(1)+String.fromCodePoint(9733)}</span>
                     </div>
 
                     </Card>
                   </Grid>
                 ))
               }
-              </Grid>
+            </Grid>
             </div>
          );
     }
