@@ -13,14 +13,7 @@ class DownloadedApps extends React.Component{
       searchedApp : "",
     };
   }
-
-  searchChange =(event)=>{
-    this.setState({
-      searchedApp:event.target.value
-    })
-  }
-
-    render(){
+  render(){
       return (
         <div>
           <div style={{marginTop:"10px",marginLeft:"15px"}}>
@@ -49,7 +42,7 @@ class DownloadedApps extends React.Component{
                     </div>
                     <div style={{display:"inline-block",verticalAlign:"top",marginLeft:"20px",marginTop:"-8px"}}>
                       <b style={{fontSize:"18px"}}>{app.appName}</b><br/>
-                      <span style={{fontSize:"14px"}}>{app.category}</span><br/>
+                      <span style={{fontSize:"14px"}}>{app.appDeveloper}</span><br/>
                       <span style={{fontSize:"14px",color:"darkorange"}}>{app.reviews.length==0?'':(app.reviews.map((review)=>(parseInt(review.rating))).reduce((a, b) => a + b,0)/(app.reviews.length)).toFixed(1)+String.fromCodePoint(9733)}</span>
                     </div>
                     </Card>
@@ -75,6 +68,13 @@ class DownloadedApps extends React.Component{
       event.target.style.color='white'
       event.target.style.backgroundColor='rgb(111, 109, 227)'
     }
+
+    searchChange =(event)=>{
+      this.setState({
+        searchedApp:event.target.value
+      })
+    }
+
   }
 
   export default DownloadedApps;

@@ -20,13 +20,8 @@ class AppsView extends React.Component{
     };
   }
 
-  searchChange =(event)=>{
-    this.setState({
-      searchedApp:event.target.value
-    })
-  }
-    render(){
-      return (
+  render(){
+    return (
             <div> 
               <div style={{marginTop:"10px",marginLeft:"15px"}}>
                 <button id="defaultCategory" className="categoryButtons" key="All" data-category="All" onClick={this.changeCategoryView} style={{marginRight:"15px"}}>All</button>
@@ -64,10 +59,16 @@ class AppsView extends React.Component{
               }
             </Grid>
             </div>
-         );
-    }
+    );
+  }
 
-    changeCategoryView = (event) => {
+  searchChange =(event)=>{
+    this.setState({
+      searchedApp:event.target.value
+    })
+  }
+
+  changeCategoryView = (event) => {
       const category=event.target.dataset.category
       this.setState({
         categoryView : category
@@ -80,7 +81,8 @@ class AppsView extends React.Component{
       }
       event.target.style.color='white'
       event.target.style.backgroundColor='rgb(111, 109, 227)'
-    }
   }
 
-  export default AppsView;
+}
+
+export default AppsView;

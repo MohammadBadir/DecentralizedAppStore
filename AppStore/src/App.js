@@ -37,89 +37,282 @@ class App extends React.Component {
 
   }
 
-  componentDidMount(){
-     const load = async ()=>{
-      const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
-      const accounts = await web3.eth.requestAccounts();
-      const contract = new web3.eth.Contract(APP_STORE_ABI, APP_STORE_ADDRESS);
-      window.ethereum.on('accountsChanged', function (newAccount) { // when switching metamask accounts => reload the page
-        window.location.reload();
-      }) 
-      web3.eth.handleRevert=true;
-      this.setState({
-        account :accounts[0],
-        appStoreContract : contract,
-      })
-      let firstTime=await contract.methods.isNewUser(accounts[0]).call();
-      console.log('account',accounts[0])
-      this.setState({
-        isFirstTime :firstTime
-      });
-
-      let userNameTemp=await contract.methods.getUserName(accounts[0]).call();
-      this.setState({
-        userName : userNameTemp
-      })
-      console.log('username',userNameTemp)
-
-      const counter = await contract.methods.appsCount().call();
-
-      let appsTemp=[];
-      for (var i = 1; i <= counter; i++) {
-        const app = await contract.methods.apps(i).call();
-        const reviews = await contract.methods.getReviews(app.id).call();
-        app.reviews=reviews;
-        appsTemp=[...appsTemp,app]
-      }
-      this.setState({
-        apps : [...appsTemp],
-        appsCount : parseInt(counter),
-      });
-
-      if(firstTime==true){
-        return;
-      }
-
-      this.initDownloadList(contract);
-
-      // //this.downloadCode = "hi";
-      // let dCode = await contract.methods.getDownloadCode().call();
-      // //console.log("hey" + dCode);
-      // //console.log(this.state.downloadCode+"A");
-      // this.setState({
-      //   downloadCode: dCode
-      // });
-      // console.log(this.state.downloadCode+"AA");
-      //console.log(this.downloadCode + "A");
-      // let mydownloadedApps = await contract.methods.getDownloadedApps().call();
-      // let downloadedAppsTemp=[];
-      // let iterator=0;
-      // while(mydownloadedApps[iterator]!=undefined){
-      //   const app = await contract.methods.apps(mydownloadedApps[iterator]).call();
-      //   downloadedAppsTemp=[...downloadedAppsTemp,app]
-      //   iterator++;
-      // }
-      // this.setState({
-      //   downloadedApps : [...downloadedAppsTemp]
-      // });
-
-      let myUploadedApps = await contract.methods.getUploadedApps(accounts[0]).call();
-      let uploadedAppsTemp=[];
-      let iter=0;
-      while(myUploadedApps[iter]!=undefined){
-   //     const app = await contract.methods.apps(myUploadedApps[iter]).call();
-   //     const reviews = await contract.methods.getReviews(app.id).call();
-  //      app.reviews=reviews;
-        let app= this.state.apps[myUploadedApps[iter]-1];
-        uploadedAppsTemp=[...uploadedAppsTemp,app]
-        iter++;
-      }
-      this.setState({
-        uploadedApps : [...uploadedAppsTemp]
-      });
-      }
-    load();
+  render(){
+     if(this.state.isFirstTime){
+      return ( 
+        <div>
+            <FirstTimeScreen updateUserName={this.updateUserName} toggleFirstTime={this.toggleFirstTime}/>
+        </div>
+      )
+    }else if(this.state.appPageView!=0){
+      return (
+        <div>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
+             <AppPage addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
+        </div>
+       );
+    }else if(this.state.currentView==0){
+       return (
+        <div>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
+             <AppsView  openAppPage={this.openAppPage}  apps={this.state.apps} categories={this.categories}/>
+        </div>
+       );
+    }else if(this.state.currentView==1){
+      return (
+        <div>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
+             <MyApps openAppPage={this.openAppPage} uploadedApps={this.state.uploadedApps} categories={this.categories}/>
+        </div>
+       );
+    }else if(this.state.currentView==2){
+      return (
+        <div>
+             <TopBar account={this.state.account} userName={this.state.userName}  changeView={this.changeView}/>
+             <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.downloadedApps} categories={this.categories}/>
+        </div>
+       );
+    }else if(this.state.currentView==3){
+      return (
+        <div>
+             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
+             <UploadApp categories={this.categories} addNewApp={this.addNewApp} uploadedApps={this.state.uploadedApps}/>
+        </div>
+       );
+    }
   }
+
+  componentDidMount(){
+    const load = async ()=>{
+     const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
+     const accounts = await web3.eth.requestAccounts();
+     const contract = new web3.eth.Contract(APP_STORE_ABI, APP_STORE_ADDRESS);
+     window.ethereum.on('accountsChanged', function (newAccount) { // when switching metamask accounts => reload the page
+       window.location.reload();
+     }) 
+     web3.eth.handleRevert=true;
+     this.setState({
+       account :accounts[0],
+       appStoreContract : contract,
+     })
+     let firstTime=await contract.methods.isNewUser(accounts[0]).call();
+     console.log('account',accounts[0])
+     this.setState({
+       isFirstTime :firstTime
+     });
+
+     let userNameTemp=await contract.methods.getUserName(accounts[0]).call();
+     this.setState({
+       userName : userNameTemp
+     })
+     console.log('username',userNameTemp)
+
+     const counter = await contract.methods.appsCount().call();
+
+     let appsTemp=[];
+     for (var i = 1; i <= counter; i++) {
+       const app = await contract.methods.apps(i).call();
+       const reviews = await contract.methods.getReviews(app.id).call();
+       app.reviews=reviews;
+       appsTemp=[...appsTemp,app]
+     }
+     this.setState({
+       apps : [...appsTemp],
+       appsCount : parseInt(counter),
+     });
+
+     if(firstTime==true){
+       return;
+     }
+
+     this.initDownloadList(contract);
+
+     // //this.downloadCode = "hi";
+     // let dCode = await contract.methods.getDownloadCode().call();
+     // //console.log("hey" + dCode);
+     // //console.log(this.state.downloadCode+"A");
+     // this.setState({
+     //   downloadCode: dCode
+     // });
+     // console.log(this.state.downloadCode+"AA");
+     //console.log(this.downloadCode + "A");
+     // let mydownloadedApps = await contract.methods.getDownloadedApps().call();
+     // let downloadedAppsTemp=[];
+     // let iterator=0;
+     // while(mydownloadedApps[iterator]!=undefined){
+     //   const app = await contract.methods.apps(mydownloadedApps[iterator]).call();
+     //   downloadedAppsTemp=[...downloadedAppsTemp,app]
+     //   iterator++;
+     // }
+     // this.setState({
+     //   downloadedApps : [...downloadedAppsTemp]
+     // });
+
+     let myUploadedApps = await contract.methods.getUploadedApps(accounts[0]).call();
+     let uploadedAppsTemp=[];
+     let iter=0;
+     while(myUploadedApps[iter]!=undefined){
+  //     const app = await contract.methods.apps(myUploadedApps[iter]).call();
+  //     const reviews = await contract.methods.getReviews(app.id).call();
+ //      app.reviews=reviews;
+       let app= this.state.apps[myUploadedApps[iter]-1];
+       uploadedAppsTemp=[...uploadedAppsTemp,app]
+       iter++;
+     }
+     this.setState({
+       uploadedApps : [...uploadedAppsTemp]
+     });
+     }
+   load();
+ }
+
+ backToApps = () => { 
+   this.setState({
+     appPageView : 0
+   })  
+ }
+
+ openAppPage =(appid) => {
+   this.setState({
+     appPageView : appid
+   })
+ }
+
+  addNewApp = async (appName,appCategory,AppDescription,appPrice,appLogoHash,appFileHash)=>{
+    try{
+      await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,appLogoHash,appFileHash).send({from : this.state.account});
+      const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
+      const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
+      newApp.reviews=reviews;
+      this.setState(oldState => ({
+        apps : [...oldState.apps,newApp],
+        appsCount : oldState.appsCount+1,
+        uploadedApps : [...oldState.uploadedApps,newApp]
+      }))
+      alert('app has been uploaded successfully')
+    }catch(err){
+      const appWithSameNameExist='you already published an app with this name!';
+      if(err.message.includes(appWithSameNameExist)){
+        alert(appWithSameNameExist);
+      }else if(err.message.includes('User denied transaction')){
+      }else{
+        alert('an error occured')
+      }
+    }
+  }
+
+   getRPCErrorMessage=(err)=>{
+    // var open = err.stack.indexOf('{')
+    // var close = err.stack.lastIndexOf('}')
+    // var j_s = err.stack.substring(open, close + 1);
+    // var j = JSON.parse(j_s);
+    // var reason = j.data[Object.keys(j.data)[0]].reason;
+    // return reason;
+
+    const data = err.data;
+    const txHash = Object.keys(data)[0]; // TODO improve
+    const reason = data[txHash].reason;
+    console.log("reason2",reason)
+    return reason;
+}
+
+addReview = async (appid, rating, review, _isAnonymous)=>{
+  try {
+    await this.state.appStoreContract.methods.addReview(appid,rating,review,_isAnonymous).send({from : this.state.account});
+    const _apps=this.state.apps;
+    _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:_isAnonymous?'Anonymous':this.state.userName,rating:rating,review:review}];
+    this.setState({
+      apps : _apps
+    })
+  }
+  catch(err) {
+    const canReviewOnce='you can review this app only once!';
+    const cannotReviewSelf='you cannot review your app!';
+    if(err.message.includes(canReviewOnce)){
+      alert(canReviewOnce);
+    }else if(err.message.includes(cannotReviewSelf)){
+      alert(cannotReviewSelf);
+    }else if(err.message.includes('User denied transaction')){
+    }else{
+      alert('an error occured')
+    }
+ // console.log("reason",err.message)
+  //alert(this.getRPCErrorMessage(err));
+    return;
+  }
+}
+
+  changeView=(event)=>{
+
+    const newViewIndex=event.target.dataset.index;
+    this.setState({
+      currentView : newViewIndex,
+      appPageView : 0 
+    })
+    var elements = document.getElementsByClassName('topButtons'); 
+    for(var i = 0; i < elements.length; i++){
+      elements[i].style.color = "white";
+      elements[i].style.backgroundColor = 'rgb(111,109,227)';
+    }
+    event.target.style.color='rgb(40,44,52)'
+    event.target.style.backgroundColor='rgb(243,244,246)'
+  }
+
+  downloadApp = async (appId) =>{
+
+    if(this.state.downloadedApps.map((app)=>app.id).includes(appId)){ // to avoid duplicates 
+      return;
+   }
+
+
+    let newStr = await this.getUpdatedDownloadCode(appId);
+
+    await this.state.appStoreContract.methods.updateDownloadCode(newStr).send({from : this.state.account});
+    let newApp= this.state.apps[appId-1]; 
+    let updatedList = [...this.state.downloadedApps, newApp];
+    this.setState(oldState=>({
+        downloadedApps : updatedList
+     }));
+
+    // const app = await this.state.appStoreContract.methods.apps(appId).call();
+    // console.log("PRE: " + this.state.downloadCode);
+    // let val = this.state.downloadCode + "$" + appId.toString();
+    // await this.state.appStoreContract.methods.downloadApp(appId, val).send({from : this.state.account});
+    // const app = await this.state.appStoreContract.methods.apps(appId).call();
+    // this.setState(oldState=>({
+    //   downloadCode : val,
+    //   downloadedApps : [...oldState.downloadedApps,app]
+    // }));
+  }
+
+  updateUserName =async (_userName) => {
+    this.setState({
+      userName : _userName
+    })
+    let encryptedString = await this.generateInitialEncrypedString();
+    await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account}).catch(
+      (err)=>{
+        const userNameNotEmpty='username cannot be empty!';
+        const alreadyRegistered='this account is already registered!';
+        if(err.message.includes(alreadyRegistered)){
+          alert(alreadyRegistered);
+        }else if(err.message.includes(userNameNotEmpty)){
+          alert(userNameNotEmpty);
+        }else if(err.message.includes('User denied transaction')){
+        }else{
+          alert('an error occured')
+        }
+      }
+    );
+    
+  }
+
+  toggleFirstTime = ()=>{
+    this.setState({
+      isFirstTime : false
+    })
+  }
+
 
   intToChar() {
     let someInt = Math.floor(Math.random() * 71) + 58;
@@ -252,9 +445,9 @@ class App extends React.Component {
 
     let newApp= this.state.apps[appId-1]; 
     let updatedList = [...this.state.downloadedApps, newApp];
-    this.setState(oldState=>({
-       downloadedApps : updatedList
-    }));
+  //  this.setState(oldState=>({
+    //   downloadedApps : updatedList
+  //  }));
 
 
     //Serialize
@@ -285,192 +478,6 @@ class App extends React.Component {
     console.log("--End--");
 
     return encryptedString;
-  }
-
-  backToApps = () => { 
-    this.setState({
-      appPageView : 0
-    })  
-  }
-
-  openAppPage =(appid) => {
-    this.setState({
-      appPageView : appid
-    })
-  }
-
-  render(){
-     if(this.state.isFirstTime){
-      return ( 
-        <div>
-            <FirstTimeScreen updateUserName={this.updateUserName} toggleFirstTime={this.toggleFirstTime}/>
-        </div>
-      )
-    }else if(this.state.appPageView!=0){
-      return (
-        <div>
-             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <AppPage addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
-        </div>
-       );
-    }else if(this.state.currentView==0){
-       return (
-        <div>
-             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <AppsView  openAppPage={this.openAppPage}  apps={this.state.apps} categories={this.categories}/>
-        </div>
-       );
-    }else if(this.state.currentView==1){
-      return (
-        <div>
-             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <MyApps openAppPage={this.openAppPage} uploadedApps={this.state.uploadedApps} categories={this.categories}/>
-        </div>
-       );
-    }else if(this.state.currentView==2){
-      return (
-        <div>
-             <TopBar account={this.state.account} userName={this.state.userName}  changeView={this.changeView}/>
-             <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.downloadedApps} categories={this.categories}/>
-        </div>
-       );
-    }else if(this.state.currentView==3){
-      return (
-        <div>
-             <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <UploadApp categories={this.categories} addNewApp={this.addNewApp} uploadedApps={this.state.uploadedApps}/>
-        </div>
-       );
-    }
-  }
-
-
-  addNewApp = async (appName,appCategory,AppDescription,appPrice,appLogoHash)=>{
-    try{
-      await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,appLogoHash).send({from : this.state.account});
-      const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
-      const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
-      newApp.reviews=reviews;
-      this.setState(oldState => ({
-        apps : [...oldState.apps,newApp],
-        appsCount : oldState.appsCount+1,
-        uploadedApps : [...oldState.uploadedApps,newApp]
-      }))
-      alert('app has been uploaded successfully')
-    }catch(err){
-      const appWithSameNameExist='you already published an app with this name!';
-      if(err.message.includes(appWithSameNameExist)){
-        alert(appWithSameNameExist);
-      }else if(err.message.includes('User denied transaction')){
-      }else{
-        alert('an error occured')
-      }
-    }
-  }
-
-   getRPCErrorMessage=(err)=>{
-    // var open = err.stack.indexOf('{')
-    // var close = err.stack.lastIndexOf('}')
-    // var j_s = err.stack.substring(open, close + 1);
-    // var j = JSON.parse(j_s);
-    // var reason = j.data[Object.keys(j.data)[0]].reason;
-    // return reason;
-
-    const data = err.data;
-    const txHash = Object.keys(data)[0]; // TODO improve
-    const reason = data[txHash].reason;
-    console.log("reason2",reason)
-    return reason;
-}
-
-addReview = async (appid, rating, review, _isAnonymous)=>{
-  try {
-    await this.state.appStoreContract.methods.addReview(appid,rating,review,_isAnonymous).send({from : this.state.account});
-    const _apps=this.state.apps;
-    _apps[appid-1].reviews=[... _apps[appid-1].reviews,{name:_isAnonymous?'Anonymous':this.state.userName,rating:rating,review:review}];
-    this.setState({
-      apps : _apps
-    })
-  }
-  catch(err) {
-    const canReviewOnce='you can review this app only once!';
-    const cannotReviewSelf='you cannot review your app!';
-    if(err.message.includes(canReviewOnce)){
-      alert(canReviewOnce);
-    }else if(err.message.includes(cannotReviewSelf)){
-      alert(cannotReviewSelf);
-    }else if(err.message.includes('User denied transaction')){
-    }else{
-      alert('an error occured')
-    }
- // console.log("reason",err.message)
-  //alert(this.getRPCErrorMessage(err));
-    return;
-  }
-}
-
-  changeView=(event)=>{
-
-    const newViewIndex=event.target.dataset.index;
-    this.setState({
-      currentView : newViewIndex,
-      appPageView : 0 
-    })
-    var elements = document.getElementsByClassName('topButtons'); 
-    for(var i = 0; i < elements.length; i++){
-      elements[i].style.color = "white";
-      elements[i].style.backgroundColor = 'rgb(111,109,227)';
-    }
-    event.target.style.color='rgb(40,44,52)'
-    event.target.style.backgroundColor='rgb(243,244,246)'
-  }
-
-  downloadApp = async (appId) =>{
-
-    if(this.state.downloadedApps.map((app)=>app.id).includes(appId)){ // to avoid duplicates 
-      return;
-   }
-
-    let newStr = await this.getUpdatedDownloadCode(appId);
-
-    await this.state.appStoreContract.methods.updateDownloadCode(newStr).send({from : this.state.account});
-    // const app = await this.state.appStoreContract.methods.apps(appId).call();
-    // console.log("PRE: " + this.state.downloadCode);
-    // let val = this.state.downloadCode + "$" + appId.toString();
-    // await this.state.appStoreContract.methods.downloadApp(appId, val).send({from : this.state.account});
-    // const app = await this.state.appStoreContract.methods.apps(appId).call();
-    // this.setState(oldState=>({
-    //   downloadCode : val,
-    //   downloadedApps : [...oldState.downloadedApps,app]
-    // }));
-  }
-
-  updateUserName =async (_userName) => {
-    this.setState({
-      userName : _userName
-    })
-    let encryptedString = await this.generateInitialEncrypedString();
-    await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account}).catch(
-      (err)=>{
-        const userNameNotEmpty='username cannot be empty!';
-        const alreadyRegistered='this account is already registered!';
-        if(err.message.includes(alreadyRegistered)){
-          alert(alreadyRegistered);
-        }else if(err.message.includes(userNameNotEmpty)){
-          alert(userNameNotEmpty);
-        }else if(err.message.includes('User denied transaction')){
-        }else{
-          alert('an error occured')
-        }
-      }
-    );
-    
-  }
-
-  toggleFirstTime = ()=>{
-    this.setState({
-      isFirstTime : false
-    })
   }
 
   generateInitialEncrypedString = async () =>{

@@ -14,6 +14,7 @@ contract AppStore {
     string downloadCode;
     uint[] uploadedApps;
   }
+
   struct AppData {
     uint id;
     string appName;
@@ -22,6 +23,7 @@ contract AppStore {
     string appDeveloper;
     address developerAddress;
     string appLogoHash;
+    string appFileHash;
     uint price;
     ReviewAndRating [] reviews;
   }
@@ -33,9 +35,9 @@ contract AppStore {
     string review;
   }
 
-  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price,string memory _appLogoHash) public {
-      for (uint i = 0; i < userDictionary[msg.sender].uploadedApps.length; i++) {
-        require(keccak256(bytes(apps[userDictionary[msg.sender].uploadedApps[i]].appName))!=keccak256(bytes(_appName)),'you already published an app with this name!');
+  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint price,string memory _appLogoHash,string memory _appFileHash) public {
+    for (uint i = 0; i < userDictionary[msg.sender].uploadedApps.length; i++) {
+      require(keccak256(bytes(apps[userDictionary[msg.sender].uploadedApps[i]].appName))!=keccak256(bytes(_appName)),'you already published an app with this name!');
     }
     appsCount++;
     apps[appsCount].id=appsCount;
@@ -43,6 +45,7 @@ contract AppStore {
     apps[appsCount].category=_category;
     apps[appsCount].appDescription=_appDescription;
     apps[appsCount].appLogoHash=_appLogoHash;
+    apps[appsCount].appFileHash=_appFileHash;
     apps[appsCount].appDeveloper=userDictionary[msg.sender].userName;
     apps[appsCount].price=price;
     apps[appsCount].developerAddress=msg.sender;
@@ -68,30 +71,34 @@ contract AppStore {
     apps[_appid].reviews.push(NewReview);
   }
 
+
   function isNewUser(address _user)public view returns(bool){
-    //return !userDictionary[msg.sender].isInit;
     return !userDictionary[_user].isInit;
   } 
+
+
   function getUserName(address _user)public view returns(string memory){
-  //  return userDictionary[msg.sender].userName;
     return userDictionary[_user].userName;
   }
 
-  function getUploadedApps(address _user) public view returns(uint[] memory){
-  //  return userDictionary[msg.sender].uploadedApps;
-    return userDictionary[_user].uploadedApps;
 
+  function getUploadedApps(address _user) public view returns(uint[] memory){
+    return userDictionary[_user].uploadedApps;
   }
+
 
   function getDownloadCode(address _user) public view returns(string memory){
-    //return userDictionary[msg.sender].downloadCode;
     return userDictionary[_user].downloadCode;
   }
-    function getReviews(uint appid) public view returns(ReviewAndRating [] memory ){
+
+
+  function getReviews(uint appid) public view returns(ReviewAndRating [] memory ){
     return apps[appid].reviews;
   }
+
 
   function updateDownloadCode(string memory newCode) public {
     userDictionary[msg.sender].downloadCode = newCode;
   }
+
 }

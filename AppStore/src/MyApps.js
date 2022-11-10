@@ -6,7 +6,7 @@ import Card from "@mui/material/Card";
 
 
 class MyApps extends React.Component{
-
+  
   constructor(props){
     super(props);
     this.state={
@@ -14,7 +14,6 @@ class MyApps extends React.Component{
       searchedApp : "",
     };
   }
-
 
   render(){
     return (

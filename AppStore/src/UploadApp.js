@@ -1,39 +1,14 @@
 import React from 'react';
 import Web3 from 'web3';
-//import {ipfs} from './IPFS.js';
-//import {ipfs} from './IPFS';
-//import {create} from 'ipfs-http-client';
-//import { create } from 'ipfs-http-client'
 
 import fleekStorage from '@fleekhq/fleek-storage-js'
 const FLEEK_API_KEY='EvylP8PA/dw/vRh5P7ntRQ==';
 const FLEEK_API_SECRET='4nZd2m+n3HB9U+iKP8629yetFoipqZKjjrVW4/L3VaM=';
 
-// //from here
 
-// const ipfsClient = require("ipfs-http-client");
-
-// const PROJECT_ID='7XZ3XYuZYoVy2d26h9CA1Q==';
-// const PROJECT_SECRET='k5gQeLlI2FakZmZ1ycDAyQ==';
-
-// const auth = 'Basic ' + Buffer.from(PROJECT_ID + ':' + PROJECT_SECRET).toString('base64');
-
-
-//   const ipfs = ipfsClient({
-//     host: 'ipfs.fleek.co',
-//     port: 5001,
-//     protocol: 'https',
-//     headers: {
-//       authorization:  auth
-//     }
-//   })
-// //till here
-
-//const ipfsClient = require('ipfs-http-client');
-//var ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'http' })
 
 let appLogoHash='';
-
+let appFileHash='';
 class UploadApp extends React.Component{
   constructor(props){
     super(props);
@@ -43,39 +18,17 @@ class UploadApp extends React.Component{
       appDescriptionInput : "",
       appNameEmpty : false,
       appPriceInput: '0',
-      buffer: null,
-    //  appLogoHash : ''
+      appLogoBuffer: null,
+      appFileBuffer: null,
     };
   }
-
-  addNewApp = async (event) =>{
-   event.preventDefault();
-   if(this.state.appNameInput==''){
-    this.setState({
-      appNameEmpty:true
-    })
-    return;
-   }else{
-    this.setState({
-      appNameEmpty:false
-    })
-   }
-  // document.getElementById("submitAppBtn").disabled = true;
-   await this.uploadImage()
-    await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,appLogoHash)
-    this.setState({
-      appNameInput : "",
-      appDescriptionInput : "",
-      appPriceInput : '0'
-    }); 
-    document.getElementById('appLogoInput').value= null;
-  //  document.getElementById("submitAppBtn").disabled = false;
-  }
-
-   render(){
+  
+  
+  render(){
       return (
        <div>
           <form onSubmit={this.addNewApp} style={{size:"90px"}}> 
+
             <label>
               <b>App name</b>      
                 <input  onChange={this.inputChangeHandle} name='appNameInput' id='appNameInput' value={this.state.appNameInput} placeholder='enter app name' size={53}/>
@@ -105,11 +58,16 @@ class UploadApp extends React.Component{
 
               <label>
                 <b>App logo</b>
-                <input type="file" onChange={this.inputLogoChangeHandle} id='appLogoInput'/>
-            {/*    <button onClick={this.uploadImage}>uploadimage</button> */}
+                <input data-buffer={"appLogoBuffer"} type="file" onChange={this.inputLogoChangeHandle} id='appLogoInput'/>
               </label>
-              {/*    <img src={this.state.appLogoHash==''?'':`https://ipfs.fleek.co/ipfs/${this.state.appLogoHash}`} alt=""/><br/> */}
-               <input  id="submitAppBtn" className="submitButtons" type="submit" value="Submit" />
+             
+              <label>
+                <b>Upload App file</b>
+                <input data-buffer={"appFileBuffer"} type="file" onChange={this.inputLogoChangeHandle} id='appFileInput'/>
+              </label>
+
+              <input  id="submitAppBtn" className="submitButtons" type="submit" value="Submit" />
+
             </form>
         </div>
          );
@@ -128,31 +86,56 @@ class UploadApp extends React.Component{
       const reader = new window.FileReader()
       reader.readAsArrayBuffer(file)
       reader.onloadend = () => {
-        this.setState({ buffer: Buffer(reader.result) })
+        this.setState({ [event.target.dataset.buffer] : Buffer(reader.result) })
       }
     }
 
-    uploadImage =async ()=>{
-      console.log('buffer from upload image',this.state.buffer)
-      const uploadResult = await fleekStorage.upload({
+    addNewApp = async (event) =>{
+      event.preventDefault();
+      if(this.state.appNameInput==''){
+        this.setState({
+          appNameEmpty:true
+        })
+        return;
+      }else{
+        this.setState({
+          appNameEmpty:false
+        })
+      }
+  
+      await this.uploadFilesToIpfs()
+      await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,appLogoHash,appFileHash)
+      this.setState({
+        appNameInput : "",
+        appDescriptionInput : "",
+        appPriceInput : '0'
+      }); 
+      document.getElementById('appLogoInput').value=null;
+      document.getElementById('appFileInput').value=null;
+
+    }
+
+    uploadFilesToIpfs =async ()=>{
+      console.log('uploading image buffer...',this.state.appLogoBuffer)
+      const imageUploadResult = await fleekStorage.upload({
         apiKey: FLEEK_API_KEY,
         apiSecret: FLEEK_API_SECRET,
         key: `file-${new Date().getTime()}`,
-        data: this.state.buffer,
+        data: this.state.appLogoBuffer,
       });
-      console.log('hash =',uploadResult)
-      appLogoHash=uploadResult.hash;
-    //  this.setState({appLogoHash : uploadResult.hash})
-  //     await ipfs.add(this.state.buffer, (error, result) => {
-  //       if(error) {
-  //         console.error(error)
-  //         return
-  //       }
-  //    //   this.simpleStorageInstance.set(result[0].hash, { from: this.state.account }).then((r) => {
-  //         return this.setState({ appLogoHash: result[0].hash })
-  //         console.log('ifpsHash', this.state.appLogoHash)
-  // //      })
-  //     })
+      console.log('logoHash =',imageUploadResult)
+      appLogoHash=imageUploadResult.hash;
+
+      console.log('uploading app file buffer...',this.state.appFileBuffer)
+      const appFileUploadResult = await fleekStorage.upload({
+        apiKey: FLEEK_API_KEY,
+        apiSecret: FLEEK_API_SECRET,
+        key: `file-${new Date().getTime()}`,
+        data: this.state.appFileBuffer,
+      });
+      console.log('appHash =',appFileUploadResult)
+      appFileHash=appFileUploadResult.hashV0;
+
     }
 
     selectCategory = (event) => {

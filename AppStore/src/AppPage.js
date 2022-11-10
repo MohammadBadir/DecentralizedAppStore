@@ -14,67 +14,20 @@ import { Typography } from '@mui/material';
 import { padding } from '@mui/system';
 
 
-class Review extends React.Component{
+class AppPage extends React.Component{
     constructor(props){
         super(props);
-    }
-    render(){
-        return (
-            <div>
-                 <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>{this.props.name}</b><br/>
-                 <Rating name="read-only" size='small' value={this.props.rating} readOnly /> <br/>
-                 {this.props.review}
-                 <hr/>
-            </div>
-    
-     );
-    }
-}
-
-class AppPage extends React.Component{
-
-  constructor(props){
-    super(props);
-    this.state={
-        ratingInput : 0,
-        reviewInput : "",
-      };
-  }
-
-  downloadApp = async(event)=>{
-    const spanElement=document.getElementById('downloading '+event.target.dataset.appid);
-    const buttonElement=document.getElementById('download '+event.target.dataset.appid);
-    spanElement.innerHTML ='downloading...';
-    buttonElement.parentNode.replaceChild (spanElement,buttonElement);
-    await this.props.downloadApp(event.target.dataset.appid)
-    spanElement.innerHTML ='';
-    spanElement.parentNode.replaceChild (buttonElement,spanElement);
-    setTimeout(function(){
-      alert('app has been downloaded successfully')
-  }, 100);
-  }
-
-
-  inputChangeHandle =(event) => {
-    this.setState({
-      [event.target.name] : event.target.value
-    });
-  }
-
-  addReview=async()=>{
-    await this.props.addReview(this.props.app.id,this.state.ratingInput,this.state.reviewInput,document.getElementById("anonymousCheckbox").checked)
-    this.setState({
-        ratingInput : 0,
-        reviewInput : "",
-    });
-  }
-
+        this.state={
+             ratingInput : 0,
+             reviewInput : "",
+            };
+  } 
     render(){
     //    console.log(JSON.stringify(this.props.app, null, 4));
     //    console.log(JSON.stringify(this.props.app.reviews, null, 4));
-      return (
+        return (
             <div> 
-              <div style={{marginTop:"20px",marginLeft:"20px"}}>
+                <div style={{marginTop:"20px",marginLeft:"20px"}}>
                     <button className='GoBackBtn' onClick={this.props.backToApps}>{" back"}</button>
                     <div style={{marginTop:"15px"}}>
                         <img className="app-image-parent" style={{marginBottom:"-20px"}} src={`https://ipfs.fleek.co/ipfs/${this.props.app.appLogoHash}`} width={150}height={150}/> 
@@ -82,7 +35,7 @@ class AppPage extends React.Component{
                              {this.props.app.appName}  
                         </h1>
                         <div style={{verticalAlign:"top",marginTop:"5px"}}>
-                            <button  id={"download "+ this.props.app.id}className="DownloadButton" data-appid={this.props.app.id} key={this.props.app.id} onClick={this.downloadApp} >Download</button><br/>
+                            <button  id={"download "+ this.props.app.id}className="DownloadButton" data-appid={this.props.app.id} key={this.props.app.id} onClick={this.downloadApp} >Buy</button><br/>
                             <span id={"downloading "+ this.props.app.id} style={{fontSize:"12.5px",color:"gray"}}></span>
                         </div>
                     </div>
@@ -93,17 +46,17 @@ class AppPage extends React.Component{
                         </h3>    
 
                         <div>
-                        <b>
-                            Description
-                        </b>
-                        <br></br>
-                        {this.props.app.appDescription} 
+                            <b>
+                                Description
+                            </b>
+                            <br></br>
+                            {this.props.app.appDescription} 
                         </div>
                         <hr/>
 
                         <div >
                             <b>
-                            Price
+                                Price
                             </b>
                             <br></br>
                             ${this.props.app.price ?? 0}
@@ -112,7 +65,7 @@ class AppPage extends React.Component{
 
                         <div>
                             <b>
-                             Category
+                                Category
                             </b>
                             <br></br>
                             {this.props.app.category} 
@@ -130,7 +83,7 @@ class AppPage extends React.Component{
 
                         <div >
                             <b>
-                            Reviews & Ratings :
+                                Reviews & Ratings :
                             </b>
                         </div>
 
@@ -156,6 +109,7 @@ class AppPage extends React.Component{
                             
                             <button onClick={this.addReview}>Submit</button>
                         </fieldset>
+
                         <fieldset>
                             <legend>Other Reviews: </legend>
                             {   this.props.app.reviews.length==0?<b>No Reviews Yet!</b> 
@@ -179,14 +133,68 @@ class AppPage extends React.Component{
                         </fieldset>
                         <div style={{height:"40px"}}></div>
 
-
                         </div>
                     </div>       
                 </div>
             </div>
-         );
+        );
     }
 
+    downloadApp = async(event)=>{
+        const spanElement=document.getElementById('downloading '+event.target.dataset.appid);
+        const buttonElement=document.getElementById('download '+event.target.dataset.appid);
+        spanElement.innerHTML ='downloading...';
+        buttonElement.parentNode.replaceChild (spanElement,buttonElement);
+        try{
+            await this.props.downloadApp(event.target.dataset.appid)
+        }catch(err){
+            spanElement.innerHTML ='';
+            spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
+            return;
+        }
+        spanElement.innerHTML ='';
+        spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
+        if (window.confirm('Press Ok to Confirm')){
+            window.open(`https://ipfs.io/ipfs/${this.props.app.appFileHash}`, '_blank');
+        };
+    //    setTimeout(function(){
+     //     alert('app has been downloaded successfully')
+   //   }, 100);
+      }
+    
+    
+      inputChangeHandle =(event) => {
+        this.setState({
+          [event.target.name] : event.target.value
+        });
+      }
+    
+      addReview=async()=>{
+        await this.props.addReview(this.props.app.id,this.state.ratingInput,this.state.reviewInput,document.getElementById("anonymousCheckbox").checked)
+        this.setState({
+            ratingInput : 0,
+            reviewInput : "",
+        });
+      }
+
+}
+
+
+class Review extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+        return (
+            <div>
+                 <b  style={{fontSize:'14px',marginTop:'5px',marginBottom:'1px'}}>{this.props.name}</b><br/>
+                 <Rating name="read-only" size='small' value={this.props.rating} readOnly /> <br/>
+                 {this.props.review}
+                 <hr/>
+            </div>
+    
+     );
+    }
 }
 
   export default AppPage;
