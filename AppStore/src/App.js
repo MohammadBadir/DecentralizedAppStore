@@ -290,20 +290,7 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
       userName : _userName
     })
     let encryptedString = await this.generateInitialEncrypedString();
-    await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account}).catch(
-      (err)=>{
-        const userNameNotEmpty='username cannot be empty!';
-        const alreadyRegistered='this account is already registered!';
-        if(err.message.includes(alreadyRegistered)){
-          alert(alreadyRegistered);
-        }else if(err.message.includes(userNameNotEmpty)){
-          alert(userNameNotEmpty);
-        }else if(err.message.includes('User denied transaction')){
-        }else{
-          alert('an error occured')
-        }
-      }
-    );
+    await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account})
     
   }
 

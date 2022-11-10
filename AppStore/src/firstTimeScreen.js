@@ -40,12 +40,25 @@ class FirstTimeScreen extends React.Component{
          this.setState({
              userNameEmpty:false
          })
-         await this.props.updateUserName(this.state.userNameInput)
-         this.setState({
-          userNameInput : "",
-         });
-         this.props.toggleFirstTime();
-        }
+         try{
+          await this.props.updateUserName(this.state.userNameInput)
+           this.props.toggleFirstTime();
+          }catch(err){
+              const userNameNotEmpty='username cannot be empty!';
+              const alreadyRegistered='this account is already registered!';
+              if(err.message.includes(alreadyRegistered)){
+                alert(alreadyRegistered);
+              }else if(err.message.includes(userNameNotEmpty)){
+                alert(userNameNotEmpty);
+              }else if(err.message.includes('User denied transaction')){
+              }else{
+                alert('an error occured')
+              }
+            }
+            this.setState({
+              userNameInput : "",
+             });
+         }
        }
     
        
