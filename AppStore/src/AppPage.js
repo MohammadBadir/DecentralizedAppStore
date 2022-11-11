@@ -35,7 +35,7 @@ class AppPage extends React.Component{
                              {this.props.app.appName}  
                         </h1>
                         <div style={{verticalAlign:"top",marginTop:"5px"}}>
-                            <button  id={"download "+ this.props.app.id}className="DownloadButton" data-appid={this.props.app.id} key={this.props.app.id} onClick={this.downloadApp} >Buy</button><br/>
+                            <button  id={"download "+ this.props.app.id}className="DownloadButton" data-appid={this.props.app.id} key={this.props.app.id} onClick={this.downloadApp} >{this.props.isPurchased?"Download":"Buy"}</button><br/>
                             <span id={"downloading "+ this.props.app.id} style={{fontSize:"12.5px",color:"gray"}}></span>
                         </div>
                     </div>
@@ -148,15 +148,16 @@ class AppPage extends React.Component{
         try{
             await this.props.downloadApp(event.target.dataset.appid)
         }catch(err){
+            console.log(err)
             spanElement.innerHTML ='';
             spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
             return;
         }
         spanElement.innerHTML ='';
         spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
-        if (window.confirm('Press Ok to Confirm')){
+     //   if (window.confirm('Press Ok to Confirm')){
             window.open(`https://ipfs.io/ipfs/${this.props.app.appFileHash}`, '_blank');
-        };
+  //      };
     //    setTimeout(function(){
      //     alert('app has been downloaded successfully')
    //   }, 100);

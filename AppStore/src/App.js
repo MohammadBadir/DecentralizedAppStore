@@ -48,7 +48,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <AppPage addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
+             <AppPage isPurchased={this.state.downloadedApps.map((app)=>app.id).includes(this.state.appPageView)} addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
         </div>
        );
     }else if(this.state.currentView==0){
@@ -449,7 +449,7 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
         method: 'eth_getEncryptionPublicKey',
         params: [this.state.account],
       });
-
+      console.log('key64',keyB64)
       pubKey = Buffer.from(keyB64, 'base64')
       this.setState({
         publicKey : pubKey
