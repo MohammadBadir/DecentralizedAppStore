@@ -373,3 +373,15 @@ fieldset > div > input , fieldset > div > label{
 .GoBackBtn:-webkit-details-marker {
   display: none;
 }
+
+
+.appPrices{
+  display: table 
+
+}
+
+.appPricesCells{
+  display: table-cell;
+  margin-top: 10px;
+  margin-right: 10px;
+}

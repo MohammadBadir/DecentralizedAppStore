@@ -18,7 +18,7 @@ class App extends React.Component {
 
   constructor(props){
     super(props);
-
+    this.CURRENCY_CONVERTOR_KEY='C5c8c6976bedc076f555cf3536f25b1910588873e056fb2691cd296ff910d147f';
     this.categories=["Education", "Entertainment", "News", "Sports", "Music", "Shopping", "Business"];
     this.state={
       currentView: 0, // apps=0,myapps=1,downloaded=2,uploadapp=3...
@@ -32,7 +32,8 @@ class App extends React.Component {
       appsCount : 0,
       isFirstTime : true,
       publicKey: "",
-      review:[]
+      review:[],
+      ethToUSDConverstionRate: null, 
     };
 
   }
@@ -48,7 +49,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <AppPage isPurchased={this.state.downloadedApps.map((app)=>app.id).includes(this.state.appPageView)} addReview={this.addReview} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
+             <AppPage isPurchased={this.state.downloadedApps.map((app)=>app.id).includes(this.state.appPageView)} addReview={this.addReview} conversionRate={this.state.ethToUSDConverstionRate} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
         </div>
        );
     }else if(this.state.currentView==0){
@@ -76,7 +77,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <UploadApp categories={this.categories} addNewApp={this.addNewApp} uploadedApps={this.state.uploadedApps}/>
+             <UploadApp categories={this.categories} addNewApp={this.addNewApp} uploadedApps={this.state.uploadedApps} conversionRate={this.state.ethToUSDConverstionRate}/>
         </div>
        );
     }
@@ -162,6 +163,13 @@ class App extends React.Component {
      this.setState({
        uploadedApps : [...uploadedAppsTemp]
      });
+     fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD&api_key=${this.CURRENCY_CONVERTOR_KEY}`)
+     .then((response) => response.json()).then(data=>{
+      console.log('converted ETH to USD',data.ETH.USD)
+      this.setState({
+        ethToUSDConverstionRate : data.ETH.USD
+      })
+     })
      }
    load();
  }
@@ -178,9 +186,9 @@ class App extends React.Component {
    })
  }
 
-  addNewApp = async (appName,appCategory,AppDescription,appPrice,appLogoHash,appFileHash)=>{
+  addNewApp = async (appName,appCategory,AppDescription,appPrice,priceCurrency,appLogoHash,appFileHash)=>{
     try{
-      await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,appLogoHash,appFileHash).send({from : this.state.account});
+      await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,priceCurrency,appLogoHash,appFileHash).send({from : this.state.account});
       const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
       const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
       newApp.reviews=reviews;
@@ -196,6 +204,7 @@ class App extends React.Component {
         alert(appWithSameNameExist);
       }else if(err.message.includes('User denied transaction')){
       }else{
+        console.log(err)
         alert('an error occured')
       }
     }

@@ -59,7 +59,7 @@ class AppPage extends React.Component{
                                 Price
                             </b>
                             <br></br>
-                            ${this.props.app.price ?? 0}
+                            {this.props.app.priceCurrency=='USD'? ('$'+parseFloat(this.props.app.price).toFixed(3) + ' ≈ '+parseFloat(this.props.app.price/this.props.conversionRate).toFixed(3)+'ETH') : (parseFloat(this.props.app.price).toFixed(3)+'ETH ≈ $'+parseFloat(this.props.app.price*this.props.conversionRate).toFixed(3)) } 
                         </div>
                         <hr/>
 

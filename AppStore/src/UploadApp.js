@@ -2,6 +2,7 @@ import React from 'react';
 import Web3 from 'web3';
 
 import fleekStorage from '@fleekhq/fleek-storage-js'
+import { FastfoodOutlined } from '@mui/icons-material';
 const FLEEK_API_KEY='EvylP8PA/dw/vRh5P7ntRQ==';
 const FLEEK_API_SECRET='4nZd2m+n3HB9U+iKP8629yetFoipqZKjjrVW4/L3VaM=';
 
@@ -17,9 +18,12 @@ class UploadApp extends React.Component{
       categoryInput : "Education",
       appDescriptionInput : "",
       appNameEmpty : false,
-      appPriceInput: '0',
+      priceNegative: false,
+      appPriceInput: '',
+      convertedValue:'',
       appLogoBuffer: null,
       appFileBuffer: null,
+      selectedCurrency : 'ETH'
     };
   }
   
@@ -36,8 +40,19 @@ class UploadApp extends React.Component{
               </label>
 
               <label>
-              <b>Price</b>      
-                <input onChange={this.inputChangeHandle} value={this.state.appPriceInput} name='appPriceInput' id='appPriceInput' type="number" style={{height : '25px',width:'50px'}}></input>
+              <b>Price</b> 
+              <div className='appPrices'>     
+                <select  onChange={this.chooseCurrency} value={this.state.selectedCurrency} className='appPricesCells' name="currency" id="currency" style={{height : '28px',width:'73px'}}>
+                  <option value="USD">USD</option>
+                  <option value="ETH">ETH</option>
+                </select>    
+                <input  className='appPricesCells' disabled={true} onChange={()=>{}} value={this.state.selectedCurrency=='ETH'?"USD":"ETH"} name='appPriceInput' style={{height : '24px',width:'72px'}}></input>
+                <br></br>
+                <input  className='appPricesCells'onChange={this.inputChangeHandle} value={this.state.appPriceInput} name='appPriceInput' type="number" style={{height : '24px',width:'65px'}}></input>
+                <input  className='appPricesCells' disabled={true} onChange={()=>{}} value={this.state.convertedValue}   type="number" style={{height : '24px',width:'72px'}}></input>
+                <br></br>
+                <span style={{fontSize:"0.8em",color:"red"}}>{this.state.priceNegative ?  "* Price cannot be less than 0" : ""}</span>
+              </div>
               </label>
 
               <label>
@@ -73,10 +88,45 @@ class UploadApp extends React.Component{
          );
     }
 
+    chooseCurrency = (event)=>{
+      this.setState({
+        selectedCurrency : event.target.value,
+        appPriceInput : '',
+        convertedValue : '',
+      });
+    }
+
     inputChangeHandle =(event) => {
       this.setState({
         [event.target.name] : event.target.value
       });
+      if(event.target.name=='appPriceInput'){
+        let res=parseFloat(event.target.value);
+        if(res<0.0){
+          this.setState({
+            priceNegative : true,
+            convertedValue : '',
+          })
+          return;
+        }else{
+          this.setState({
+            priceNegative : false,
+          });
+          this.calculatedNewConvertedValue(event.target.value);
+        }
+
+      }
+    }
+    calculatedNewConvertedValue = (from)=> {
+      if(this.state.selectedCurrency=='ETH'){
+        this.setState({
+          convertedValue : from*this.props.conversionRate,
+        }); 
+      }else{
+        this.setState({
+          convertedValue : from/this.props.conversionRate,
+        }); 
+      }
     }
 
     inputLogoChangeHandle = (event) => {
@@ -102,9 +152,12 @@ class UploadApp extends React.Component{
           appNameEmpty:false
         })
       }
+      if(this.state.priceNegative){
+        return;
+      }
   
       await this.uploadFilesToIpfs()
-      await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,appLogoHash,appFileHash)
+      await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,this.state.selectedCurrency,appLogoHash,appFileHash)
       this.setState({
         appNameInput : "",
         appDescriptionInput : "",
