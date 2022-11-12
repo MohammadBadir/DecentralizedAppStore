@@ -92,6 +92,7 @@ class App extends React.Component {
        window.location.reload();
      }) 
      web3.eth.handleRevert=true;
+     
      this.setState({
        account :accounts[0],
        appStoreContract : contract,
@@ -108,6 +109,14 @@ class App extends React.Component {
      })
      console.log('username',userNameTemp)
 
+     fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD&api_key=${this.CURRENCY_CONVERTOR_KEY}`)
+     .then((response) => response.json()).then(data=>{
+      console.log('converted ETH to USD',data.ETH.USD)
+      this.setState({
+        ethToUSDConverstionRate : data.ETH.USD
+      })
+     })
+     
      const counter = await contract.methods.appsCount().call();
 
      let appsTemp=[];
@@ -163,13 +172,6 @@ class App extends React.Component {
      this.setState({
        uploadedApps : [...uploadedAppsTemp]
      });
-     fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD&api_key=${this.CURRENCY_CONVERTOR_KEY}`)
-     .then((response) => response.json()).then(data=>{
-      console.log('converted ETH to USD',data.ETH.USD)
-      this.setState({
-        ethToUSDConverstionRate : data.ETH.USD
-      })
-     })
      }
    load();
  }
