@@ -35,7 +35,7 @@ class UploadApp extends React.Component{
 
             <label>
               <b>App name</b>      
-                <input  onChange={this.inputChangeHandle} name='appNameInput' id='appNameInput' value={this.state.appNameInput} placeholder='enter app name' size={53}/>
+                <input  onChange={this.inputChangeHandle} name='appNameInput'  style={{padding:'5px',height : '23px'}}  id='appNameInput' value={this.state.appNameInput} placeholder='enter app name' size={53}/>
                 <span style={{fontSize:"0.8em",color:"red"}}>{this.state.appNameEmpty ?  "* App name cannot be empty." : ""}</span>
               </label>
 
@@ -57,7 +57,7 @@ class UploadApp extends React.Component{
 
               <label>
               <b>Category</b>
-              <select onChange={this.selectCategory} id="appCategory" value={this.state.categoryInput} name="appCategory">
+              <select onChange={this.selectCategory}  style={{height : '30px',width:'120px'}} id="appCategory" value={this.state.categoryInput} name="appCategory">
                 {
                 this.props.categories.map((category, index) => (
                   <option key={category} value={category}>{category}</option>
@@ -78,10 +78,11 @@ class UploadApp extends React.Component{
              
               <label>
                 <b>Upload App file</b>
-                <input data-buffer={"appFileBuffer"} type="file" onChange={this.inputLogoChangeHandle} id='appFileInput'/>
+                <input data-buffer={"appFileBuffer"}  type="file" onChange={this.inputLogoChangeHandle} id='appFileInput'/>
+                <span style={{fontSize:"0.8em",color:"red"}}>{this.state.appF ?  "* App name cannot be empty." : ""}</span>
               </label>
 
-              <input  id="submitAppBtn" className="submitButtons" type="submit" value="Submit" />
+              <input  disabled={false} id="submitAppBtn" className="submitButtons" type="submit" value="Submit" />
 
             </form>
         </div>
@@ -132,7 +133,11 @@ class UploadApp extends React.Component{
     inputLogoChangeHandle = (event) => {
       event.preventDefault()
       const file = event.target.files[0]
-      if(file=='' || file== undefined || file==null) return
+      console.log('file',file)
+      if(file=='' || file==undefined || file==null) {
+        this.setState({ [event.target.dataset.buffer] : null })
+        return
+      }
       const reader = new window.FileReader()
       reader.readAsArrayBuffer(file)
       reader.onloadend = () => {
@@ -155,13 +160,24 @@ class UploadApp extends React.Component{
       if(this.state.priceNegative){
         return;
       }
-  
-      await this.uploadFilesToIpfs()
+      try{
+        await this.uploadFilesToIpfs()
+      }catch(err){
+        if(err=='No file to upload'){
+          alert('please upload app file')
+        }else if(err.message.includes('Network Failure')){
+          alert('Check your internet connection and try again')
+        }else{
+          alert('an error occured')
+        }
+        return;
+      }
       await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,this.state.selectedCurrency,appLogoHash,appFileHash)
       this.setState({
         appNameInput : "",
         appDescriptionInput : "",
-        appPriceInput : '0'
+        appPriceInput : '',
+        convertedValue:'',
       }); 
       document.getElementById('appLogoInput').value=null;
       document.getElementById('appFileInput').value=null;
@@ -169,16 +185,23 @@ class UploadApp extends React.Component{
     }
 
     uploadFilesToIpfs =async ()=>{
-      console.log('uploading image buffer...',this.state.appLogoBuffer)
-      const imageUploadResult = await fleekStorage.upload({
-        apiKey: FLEEK_API_KEY,
-        apiSecret: FLEEK_API_SECRET,
-        key: `file-${new Date().getTime()}`,
-        data: this.state.appLogoBuffer,
-      });
-      console.log('logoHash =',imageUploadResult)
-      appLogoHash=imageUploadResult.hash;
-
+      try{
+        console.log('uploading image buffer...',this.state.appLogoBuffer)
+        const imageUploadResult = await fleekStorage.upload({
+          apiKey: FLEEK_API_KEY,
+          apiSecret: FLEEK_API_SECRET,
+          key: `file-${new Date().getTime()}`,
+          data: this.state.appLogoBuffer,
+        });
+        console.log('logoHash =',imageUploadResult)
+        appLogoHash=imageUploadResult.hash;
+      }catch(err){
+        if(err=='No file to upload'){
+          appLogoHash='default';
+        }else{
+          throw err
+        }
+      }
       console.log('uploading app file buffer...',this.state.appFileBuffer)
       const appFileUploadResult = await fleekStorage.upload({
         apiKey: FLEEK_API_KEY,
@@ -188,6 +211,7 @@ class UploadApp extends React.Component{
       });
       console.log('appHash =',appFileUploadResult)
       appFileHash=appFileUploadResult.hashV0;
+  
 
     }
 

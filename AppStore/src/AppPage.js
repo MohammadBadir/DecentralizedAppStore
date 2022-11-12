@@ -10,8 +10,7 @@ import SelectInput from '@mui/material/Select/SelectInput';
 import { wait } from '@testing-library/user-event/dist/utils';
 import { IconButton } from '@mui/material';
 import { Rating } from '@mui/material';
-import { Typography } from '@mui/material';
-import { padding } from '@mui/system';
+import  defaultLogo from "./defaultLogo.jpeg";
 
 
 class AppPage extends React.Component{
@@ -30,7 +29,7 @@ class AppPage extends React.Component{
                 <div style={{marginTop:"20px",marginLeft:"20px"}}>
                     <button className='GoBackBtn' onClick={this.props.backToApps}>{" back"}</button>
                     <div style={{marginTop:"15px"}}>
-                        <img className="app-image-parent" style={{marginBottom:"-20px"}} src={`https://ipfs.fleek.co/ipfs/${this.props.app.appLogoHash}`} width={150}height={150}/> 
+                        <img className="app-image-parent" style={{marginBottom:"-20px"}} src={this.props.app.appLogoHash=='default'?defaultLogo:`https://ipfs.fleek.co/ipfs/${this.props.app.appLogoHash}`} width={150}height={150}/> 
                         <h1 style={{marginBottom:"0px"}}className="app-image-child">                   
                              {this.props.app.appName}  
                         </h1>
