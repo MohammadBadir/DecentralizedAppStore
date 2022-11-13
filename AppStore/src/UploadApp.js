@@ -95,7 +95,7 @@ class UploadApp extends React.Component{
     chooseCurrency = (event)=>{
       this.setState({
         selectedCurrency : event.target.value,
-        appPriceInput : '',
+        appPriceInput : '0',
         convertedValue : '',
       });
     }
