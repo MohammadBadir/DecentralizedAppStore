@@ -116,7 +116,7 @@ class App extends React.Component {
         ethToUSDConverstionRate : data.ETH.USD
       })
      })
-     
+
      const counter = await contract.methods.appsCount().call();
 
      let appsTemp=[];
@@ -189,9 +189,10 @@ class App extends React.Component {
  }
 
   addNewApp = async (appName,appCategory,AppDescription,appPrice,priceCurrency,appLogoHash,appFileHash)=>{
-    try{
-      await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,priceCurrency,appLogoHash,appFileHash).send({from : this.state.account});
-      const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
+
+    await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,priceCurrency,appLogoHash,appFileHash).send({from : this.state.account});
+    document.querySelector(".containerSbmtBtn").classList.toggle("active")
+    const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
       const reviews = await this.state.appStoreContract.methods.getReviews(newApp.id).call();
       newApp.reviews=reviews;
       this.setState(oldState => ({
@@ -200,16 +201,7 @@ class App extends React.Component {
         uploadedApps : [...oldState.uploadedApps,newApp]
       }))
       alert('app has been uploaded successfully')
-    }catch(err){
-      const appWithSameNameExist='you already published an app with this name!';
-      if(err.message.includes(appWithSameNameExist)){
-        alert(appWithSameNameExist);
-      }else if(err.message.includes('User denied transaction')){
-      }else{
-        console.log(err)
-        alert('an error occured')
-      }
-    }
+   
   }
 
    getRPCErrorMessage=(err)=>{

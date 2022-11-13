@@ -19,7 +19,7 @@ class UploadApp extends React.Component{
       appDescriptionInput : "",
       appNameEmpty : false,
       priceNegative: false,
-      appPriceInput: '',
+      appPriceInput: '0',
       convertedValue:'',
       appLogoBuffer: null,
       appFileBuffer: null,
@@ -81,9 +81,12 @@ class UploadApp extends React.Component{
                 <input data-buffer={"appFileBuffer"}  type="file" onChange={this.inputLogoChangeHandle} id='appFileInput'/>
                 <span style={{fontSize:"0.8em",color:"red"}}>{this.state.appF ?  "* App name cannot be empty." : ""}</span>
               </label>
-
-              <input  disabled={false} id="submitAppBtn" className="submitButtons" type="submit" value="Submit" />
-
+              <div className='containerSbmtBtn'>
+                
+                <button class="submitAppBtn" onClick={this.addNewApp}>
+                  <span class="SbmtBtntext">Submit</span>
+                       </button>              </div>
+              <div style={{height:"20px"}}></div>
             </form>
         </div>
          );
@@ -160,19 +163,28 @@ class UploadApp extends React.Component{
       if(this.state.priceNegative){
         return;
       }
+      document.querySelector(".containerSbmtBtn").classList.toggle("active")
+      document.querySelector(".submitAppBtn").disabled=true;
       try{
         await this.uploadFilesToIpfs()
+        await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,this.state.selectedCurrency,appLogoHash,appFileHash)
       }catch(err){
+        const appWithSameNameExist='you already published an app with this name!';
         if(err=='No file to upload'){
           alert('please upload app file')
         }else if(err.message.includes('Network Failure')){
           alert('Check your internet connection and try again')
+        }else if(err.message.includes(appWithSameNameExist)){
+          alert(appWithSameNameExist);
+        }else if(err.message.includes('User denied transaction')){
         }else{
+          console.log(err)
           alert('an error occured')
         }
+        document.querySelector(".containerSbmtBtn").classList.toggle("active")
+        document.querySelector(".submitAppBtn").disabled=false;
         return;
       }
-      await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,this.state.selectedCurrency,appLogoHash,appFileHash)
       this.setState({
         appNameInput : "",
         appDescriptionInput : "",
@@ -181,6 +193,7 @@ class UploadApp extends React.Component{
       }); 
       document.getElementById('appLogoInput').value=null;
       document.getElementById('appFileInput').value=null;
+      document.querySelector(".submitAppBtn").disabled=false;
 
     }
 

@@ -240,14 +240,14 @@ form{
 
 
 .submitButtons {
-  background-image: linear-gradient(#f7f8fa ,#e7e9ec);
-  border-color: #adb1b8 #a2a6ac #8d9096;
+  background-image: linear-gradient(#3498db ,#3498db);
+  border-color: #3498db #3498db #3498db;
   border-style: solid;
   border-width: 1px;
   border-radius: 3px;
   box-shadow: rgba(255,255,255,.6) 0 1px 0 inset;
   box-sizing: border-box;
-  color: #0f1111;
+  color: #ffffff;
   cursor: pointer;
   display: inline-block;
   font-family: "Amazon Ember",Arial,sans-serif;
@@ -256,7 +256,7 @@ form{
   font-size: 13px;
   outline: 0;
   overflow: hidden;
-  padding: 0 8px;
+  padding: 0 12px;
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -383,5 +383,61 @@ fieldset > div > input , fieldset > div > label{
 .appPricesCells{
   display: table-cell;
   margin-top: 10px;
-  margin-right: 10px;
+  margin-right: 0px;
+}
+
+
+.containerSbmtBtn {
+  height: 100px;
+  width: 70px;
+  margin-top : 35px;
+  margin-left : 40px;
+
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.submitAppBtn {
+  width: 150px;
+  height: 30px;
+  border-radius: 5px;
+
+  border: 2px solid rgb(111, 109, 227);
+  background-color: rgb(111, 109, 227);
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+.containerSbmtBtn.active .submitAppBtn {
+  animation: animate-line 0.3s ease-in, spinner 0.5s infinite;
+  animation-delay: 0.1s, 0.5s;
+  -webkit-animation-fill-mode: forwards;
+  border: 2px solid rgb(111, 109, 227);
+  background-color: #fff;
+  border-radius: 40px;
+}
+.submitAppBtn.active:disabled, 
+
+.containerSbmtBtn.active .SbmtBtntext {
+  display: none;
+  font-size: 20px;
+}
+@keyframes animate-line {
+  0% {
+    width: 150px;
+  }
+  100% {
+    width: 30px;
+    border-bottom-color: transparent;
+    border-right-color: transparent;
+  }
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
