@@ -383,7 +383,7 @@ fieldset > div > input , fieldset > div > label{
 .appPricesCells{
   display: table-cell;
   margin-top: 10px;
-  margin-right: 0px;
+  margin-right: 10px;
 }
 
 
