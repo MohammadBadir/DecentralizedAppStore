@@ -49,7 +49,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <AppPage isPurchased={this.state.downloadedApps.map((app)=>app.id).includes(this.state.appPageView)} addReview={this.addReview} conversionRate={this.state.ethToUSDConverstionRate} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} backToApps={this.backToApps}/>
+             <AppPage isPurchased={this.state.downloadedApps.map((app)=>app.id).includes(this.state.appPageView)} addReview={this.addReview} conversionRate={this.state.ethToUSDConverstionRate} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} currentAccount={this.state.account} backToApps={this.backToApps}/>
         </div>
        );
     }else if(this.state.currentView==0){

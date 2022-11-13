@@ -34,7 +34,7 @@ class AppPage extends React.Component{
                              {this.props.app.appName}  
                         </h1>
                         <div style={{verticalAlign:"top",marginTop:"5px"}}>
-                            <button  id={"download "+ this.props.app.id}className="DownloadButton" data-appid={this.props.app.id} key={this.props.app.id} onClick={this.downloadApp} >{this.props.isPurchased?"Download":"Buy"}</button><br/>
+                            <button  id={"download "+ this.props.app.id}className="DownloadButton" data-appid={this.props.app.id} key={this.props.app.id} onClick={this.downloadApp} >{((this.props.isPurchased)||(this.props.app.developerAddress==this.props.currentAccount))?"Download":"Buy"}</button><br/>
                             <span id={"downloading "+ this.props.app.id} style={{fontSize:"12.5px",color:"gray"}}></span>
                         </div>
                     </div>
