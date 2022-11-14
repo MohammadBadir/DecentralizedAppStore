@@ -83,7 +83,8 @@ contract AppStore {
   }
 
 
-  function purchaseApp(uint _appid,uint conversionRate)public payable{
+  function purchaseApp(uint _appid)public payable{
+      uint conversionRate=1;
        if(keccak256(bytes("ETH"))==keccak256(bytes(apps[_appid].priceCurrency))){
          require(msg.value>=apps[_appid].price,"Not enough money!");
        }else{
