@@ -154,6 +154,7 @@ class AppPage extends React.Component{
             spanElement.innerHTML ='';
             spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
             window.open(`https://ipfs.io/ipfs/${appHash}`, '_blank');
+            window.location.reload();
 
         }catch(err){ // to handle errors and not enough ether etc... 
             console.log(err)

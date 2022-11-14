@@ -83,8 +83,24 @@ contract AppStore {
   }
 
 
-  function purchaseApp(uint _appid)public{
+  function purchaseApp(uint _appid)public payable{
+      // if(keccak256(bytes("ETH"))==keccak256(bytes(apps[_appid].priceCurrency))){
+      //   require(msg.value>=apps[_appid].price,"paid money is not enough");
+      // }else{
+      //   require((msg.value/conversionRate)+1>=apps[_appid].price,"paid money is not enough");
+      // }
+    for (uint i = 0; i < userDictionary[msg.sender].purchasedApps.length; i++) {
+        if(userDictionary[msg.sender].purchasedApps[i]==_appid){
+          return;
+        }
+    }
+    for (uint i = 0; i < userDictionary[msg.sender].uploadedApps.length; i++) {
+        if(userDictionary[msg.sender].uploadedApps[i]==_appid){
+          return;
+        }
+    }
       userDictionary[msg.sender].purchasedApps.push(_appid);
+    //  apps[_appid].developerAddress.transfer(msg.value);
   }
 
 

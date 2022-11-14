@@ -259,6 +259,8 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
     }else if(err.message.includes(cannotReviewSelf)){
       alert(cannotReviewSelf);
     }else if(err.message.includes('User denied transaction')){
+    }else if(err.message.includes("you cannot review an app you didnt purchase!")){
+      alert("you cannot review an app you didnt purchase!");
     }else{
       alert('an error occured')
     }
@@ -285,7 +287,9 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
   }
 
   downloadApp = async (appId) =>{
-   const purchasedApp=this.state.apps[appId-1];
+   let purchasedApp=await this.state.appStoreContract.methods.apps(appId).call();
+   const reviews = await this.state.appStoreContract.methods.getReviews(purchasedApp.id).call();
+   purchasedApp.reviews=reviews;
    this.setState(oldState => ({
       purchasedApps : [...oldState.purchasedApps,purchasedApp]
     }))
