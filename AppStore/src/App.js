@@ -260,7 +260,7 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
       alert(cannotReviewSelf);
     }else if(err.message.includes('User denied transaction')){
     }else if(err.message.includes("you cannot review an app you didnt purchase!")){
-      alert("you cannot review an app you didnt purchase!");
+      alert("you cannot review an app you didn't purchase!");
     }else{
       alert('an error occured')
     }

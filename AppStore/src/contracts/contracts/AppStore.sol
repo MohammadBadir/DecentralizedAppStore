@@ -25,7 +25,7 @@ contract AppStore {
     string appDeveloper;
     address developerAddress;
     string appLogoHash;
-    string price;
+    uint price;
     string priceCurrency;
     ReviewAndRating [] reviews;
   }
@@ -37,7 +37,7 @@ contract AppStore {
     string review;
   }
 
-  function createApp(string memory _appName,string memory _category,string memory _appDescription,string memory _price,string memory _priceCurrency, string memory _appLogoHash,string memory _appFileHash) public {
+  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint _price,string memory _priceCurrency, string memory _appLogoHash,string memory _appFileHash) public payable {
     for (uint i = 0; i < userDictionary[msg.sender].uploadedApps.length; i++) {
       require(keccak256(bytes(apps[userDictionary[msg.sender].uploadedApps[i]].appName))!=keccak256(bytes(_appName)),'you already published an app with this name!');
     }
@@ -83,12 +83,12 @@ contract AppStore {
   }
 
 
-  function purchaseApp(uint _appid)public payable{
-      // if(keccak256(bytes("ETH"))==keccak256(bytes(apps[_appid].priceCurrency))){
-      //   require(msg.value>=apps[_appid].price,"paid money is not enough");
-      // }else{
-      //   require((msg.value/conversionRate)+1>=apps[_appid].price,"paid money is not enough");
-      // }
+  function purchaseApp(uint _appid,uint conversionRate)public payable{
+       if(keccak256(bytes("ETH"))==keccak256(bytes(apps[_appid].priceCurrency))){
+         require(msg.value>=apps[_appid].price,"Not enough money!");
+       }else{
+         require((msg.value/conversionRate)+1>=apps[_appid].price,"Not enough money!");
+       }
     for (uint i = 0; i < userDictionary[msg.sender].purchasedApps.length; i++) {
         if(userDictionary[msg.sender].purchasedApps[i]==_appid){
           return;
@@ -100,7 +100,7 @@ contract AppStore {
         }
     }
       userDictionary[msg.sender].purchasedApps.push(_appid);
-    //  apps[_appid].developerAddress.transfer(msg.value);
+     // apps[_appid].developerAddress.send(msg.value);
   }
 
 

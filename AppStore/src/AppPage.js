@@ -146,7 +146,7 @@ class AppPage extends React.Component{
         buttonElement.parentNode.replaceChild (spanElement,buttonElement);
         let appHash
         try{
-            await this.props.contract.methods.purchaseApp(event.target.dataset.appid).send({from : this.props.currentAccount});
+            await this.props.contract.methods.purchaseApp(event.target.dataset.appid).send({from : this.props.currentAccount,value: 1});
             appHash=await this.props.contract.methods.getAppHash(event.target.dataset.appid).call();
             if(!this.props.purchasedApps.map((app)=>app.id).includes(event.target.dataset.appid) && !this.props.isMyApp){ // to avoid duplicates 
                 this.props.downloadApp();
