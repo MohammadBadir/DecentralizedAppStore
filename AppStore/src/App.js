@@ -27,7 +27,7 @@ class App extends React.Component {
       userName :'',
       appStoreContract : [],
       apps :[],
-      downloadedApps:[],
+      purchasedApps:[],
       uploadedApps:[],
       appsCount : 0,
       isFirstTime : true,
@@ -39,6 +39,9 @@ class App extends React.Component {
   }
 
   render(){
+    this.state.purchasedApps.forEach((app)=>{
+      console.log(app)
+    })
      if(this.state.isFirstTime){
       return ( 
         <div>
@@ -49,7 +52,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName} changeView={this.changeView}/>
-             <AppPage isPurchased={this.state.downloadedApps.map((app)=>app.id).includes(this.state.appPageView)} addReview={this.addReview} conversionRate={this.state.ethToUSDConverstionRate} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} currentAccount={this.state.account} backToApps={this.backToApps}/>
+             <AppPage isPurchased={this.state.purchasedApps.map((app)=>app.id).includes(this.state.appPageView)} addReview={this.addReview} conversionRate={this.state.ethToUSDConverstionRate} downloadApp={this.downloadApp} app={this.state.apps[this.state.appPageView-1]} contract={this.state.appStoreContract} purchasedApps={this.state.purchasedApps} isMyApp={this.state.uploadedApps.map((app)=>app.id).includes(this.state.appPageView)} currentAccount={this.state.account} backToApps={this.backToApps}/>
         </div>
        );
     }else if(this.state.currentView==0){
@@ -70,7 +73,7 @@ class App extends React.Component {
       return (
         <div>
              <TopBar account={this.state.account} userName={this.state.userName}  changeView={this.changeView}/>
-             <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.downloadedApps} categories={this.categories}/>
+             <DownloadedApps openAppPage={this.openAppPage} downloadedApps={this.state.purchasedApps} categories={this.categories}/>
         </div>
        );
     }else if(this.state.currentView==3){
@@ -108,14 +111,20 @@ class App extends React.Component {
        userName : userNameTemp
      })
      console.log('username',userNameTemp)
-
-     fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD&api_key=${this.CURRENCY_CONVERTOR_KEY}`)
-     .then((response) => response.json()).then(data=>{
+      fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD&api_key=${this.CURRENCY_CONVERTOR_KEY}`)
+      .then((response) => response.json()).then(data=>{
       console.log('converted ETH to USD',data.ETH.USD)
       this.setState({
         ethToUSDConverstionRate : data.ETH.USD
       })
-     })
+     }).catch((err)=>{
+      if(window.confirm('please connect to the internet to proceed')){
+        window.location.reload()
+      }else{
+        window.location.reload()
+      }
+     }
+     )
 
      const counter = await contract.methods.appsCount().call();
 
@@ -135,8 +144,23 @@ class App extends React.Component {
        return;
      }
 
-     this.initDownloadList(contract);
-
+   //new**  this.initDownloadList(contract);
+//replaced by : 
+    let myPurchasedApps = await contract.methods.getPurchasedApps(accounts[0]).call();
+    console.log("purchased:",myPurchasedApps)
+    let myPurchasedAppsTemp=[];
+    let iter2=0;
+    while(myPurchasedApps[iter2]!=undefined){
+      //     const app = await contract.methods.apps(myPurchasedApps[iter]).call();
+      //     const reviews = await contract.methods.getReviews(app.id).call();
+      //      app.reviews=reviews;
+        let app= this.state.apps[myPurchasedApps[iter2]-1];
+        myPurchasedAppsTemp=[...myPurchasedAppsTemp,app]
+        iter2++;
+    }
+    this.setState({
+      purchasedApps : [...myPurchasedAppsTemp]
+    });
      // //this.downloadCode = "hi";
      // let dCode = await contract.methods.getDownloadCode().call();
      // //console.log("hey" + dCode);
@@ -189,7 +213,6 @@ class App extends React.Component {
  }
 
   addNewApp = async (appName,appCategory,AppDescription,appPrice,priceCurrency,appLogoHash,appFileHash)=>{
-
     await this.state.appStoreContract.methods.createApp(appName,appCategory,AppDescription,appPrice,priceCurrency,appLogoHash,appFileHash).send({from : this.state.account});
     document.querySelector(".containerSbmtBtn").classList.toggle("active")
     const newApp=await this.state.appStoreContract.methods.apps(this.state.appsCount+1).call();
@@ -204,20 +227,20 @@ class App extends React.Component {
    
   }
 
-   getRPCErrorMessage=(err)=>{
-    // var open = err.stack.indexOf('{')
-    // var close = err.stack.lastIndexOf('}')
-    // var j_s = err.stack.substring(open, close + 1);
-    // var j = JSON.parse(j_s);
-    // var reason = j.data[Object.keys(j.data)[0]].reason;
-    // return reason;
+//    getRPCErrorMessage=(err)=>{
+//     // var open = err.stack.indexOf('{')
+//     // var close = err.stack.lastIndexOf('}')
+//     // var j_s = err.stack.substring(open, close + 1);
+//     // var j = JSON.parse(j_s);
+//     // var reason = j.data[Object.keys(j.data)[0]].reason;
+//     // return reason;
 
-    const data = err.data;
-    const txHash = Object.keys(data)[0]; // TODO improve
-    const reason = data[txHash].reason;
-    console.log("reason2",reason)
-    return reason;
-}
+//     const data = err.data;
+//     const txHash = Object.keys(data)[0]; // TODO improve
+//     const reason = data[txHash].reason;
+//     console.log("reason2",reason)
+//     return reason;
+// }
 
 addReview = async (appid, rating, review, _isAnonymous)=>{
   try {
@@ -262,20 +285,19 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
   }
 
   downloadApp = async (appId) =>{
+   const purchasedApp=this.state.apps[appId-1];
+   this.setState(oldState => ({
+      purchasedApps : [...oldState.purchasedApps,purchasedApp]
+    }))
 
-    if(this.state.downloadedApps.map((app)=>app.id).includes(appId)){ // to avoid duplicates 
-      return;
-   }
+    // let newStr = await this.getUpdatedDownloadCode(appId);
 
-
-    let newStr = await this.getUpdatedDownloadCode(appId);
-
-    await this.state.appStoreContract.methods.updateDownloadCode(newStr).send({from : this.state.account});
-    let newApp= this.state.apps[appId-1]; 
-    let updatedList = [...this.state.downloadedApps, newApp];
-    this.setState(oldState=>({
-        downloadedApps : updatedList
-     }));
+    // await this.state.appStoreContract.methods.updateDownloadCode(newStr).send({from : this.state.account});
+    // let newApp= this.state.apps[appId-1]; 
+    // let updatedList = [...this.state.purchasedApps, newApp];
+    // this.setState(oldState=>({
+    //     downloadedApps : updatedList
+    //  }));
 
     // const app = await this.state.appStoreContract.methods.apps(appId).call();
     // console.log("PRE: " + this.state.downloadCode);
@@ -292,7 +314,8 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
     this.setState({
       userName : _userName
     })
-    let encryptedString = await this.generateInitialEncrypedString();
+   // let encryptedString = await this.generateInitialEncrypedString();
+    let encryptedString = '';
     await this.state.appStoreContract.methods.registerUser(_userName, encryptedString).send({from : this.state.account})
     
   }
@@ -304,201 +327,201 @@ addReview = async (appid, rating, review, _isAnonymous)=>{
   }
 
 
-  intToChar() {
-    let someInt = Math.floor(Math.random() * 71) + 58;
-    return String.fromCharCode(someInt);
-  }
+//   intToChar() {
+//     let someInt = Math.floor(Math.random() * 71) + 58;
+//     return String.fromCharCode(someInt);
+//   }
 
-  encryptData(publicKey, data) {
-    // Returned object contains 4 properties: version, ephemPublicKey, nonce, ciphertext
-    // Each contains data encoded using base64, version is always the same string
-    const enc = encrypt({
-      publicKey: publicKey.toString('base64'),
-      data: ascii85.encode(data).toString(),
-      version: 'x25519-xsalsa20-poly1305',
-    });
+//   encryptData(publicKey, data) {
+//     // Returned object contains 4 properties: version, ephemPublicKey, nonce, ciphertext
+//     // Each contains data encoded using base64, version is always the same string
+//     const enc = encrypt({
+//       publicKey: publicKey.toString('base64'),
+//       data: ascii85.encode(data).toString(),
+//       version: 'x25519-xsalsa20-poly1305',
+//     });
   
-    // We want to store the data in smart contract, therefore we concatenate them
-    // into single Buffer
-    const buf = Buffer.concat([
-      Buffer.from(enc.ephemPublicKey, 'base64'),
-      Buffer.from(enc.nonce, 'base64'),
-      Buffer.from(enc.ciphertext, 'base64'),
-    ]);
+//     // We want to store the data in smart contract, therefore we concatenate them
+//     // into single Buffer
+//     const buf = Buffer.concat([
+//       Buffer.from(enc.ephemPublicKey, 'base64'),
+//       Buffer.from(enc.nonce, 'base64'),
+//       Buffer.from(enc.ciphertext, 'base64'),
+//     ]);
     
-    // In smart contract we are using `bytes[112]` variable (fixed size byte array)
-    // you might need to use `bytes` type for dynamic sized array
-    // We are also using ethers.js which requires type `number[]` when passing data
-    // for argument of type `bytes` to the smart contract function
-    // Next line just converts the buffer to `number[]` required by contract function
-    // THIS LINE IS USED IN OUR ORIGINAL CODE:
-    // return buf.toJSON().data;
+//     // In smart contract we are using `bytes[112]` variable (fixed size byte array)
+//     // you might need to use `bytes` type for dynamic sized array
+//     // We are also using ethers.js which requires type `number[]` when passing data
+//     // for argument of type `bytes` to the smart contract function
+//     // Next line just converts the buffer to `number[]` required by contract function
+//     // THIS LINE IS USED IN OUR ORIGINAL CODE:
+//     // return buf.toJSON().data;
     
-    // Return just the Buffer to make the function directly compatible with decryptData function
-    return buf;
-  }
+//     // Return just the Buffer to make the function directly compatible with decryptData function
+//     return buf;
+//   }
 
-  async decryptData(account, data) {
-    // Reconstructing the original object outputed by encryption
-    const structuredData = {
-      version: 'x25519-xsalsa20-poly1305',
-      ephemPublicKey: data.slice(0, 32).toString('base64'),
-      nonce: data.slice(32, 56).toString('base64'),
-      ciphertext: data.slice(56).toString('base64'),
-    };
-    // Convert data to hex string required by MetaMask
-    const ct = `0x${Buffer.from(JSON.stringify(structuredData), 'utf8').toString('hex')}`;
-    // Send request to MetaMask to decrypt the ciphertext
-    // Once again application must have acces to the account
-    const decrypt = await window.ethereum.request({
-      method: 'eth_decrypt',
-      params: [ct, account],
-    });
-    // Decode the base85 to final bytes
-    return ascii85.decode(decrypt);
-  }
+//   async decryptData(account, data) {
+//     // Reconstructing the original object outputed by encryption
+//     const structuredData = {
+//       version: 'x25519-xsalsa20-poly1305',
+//       ephemPublicKey: data.slice(0, 32).toString('base64'),
+//       nonce: data.slice(32, 56).toString('base64'),
+//       ciphertext: data.slice(56).toString('base64'),
+//     };
+//     // Convert data to hex string required by MetaMask
+//     const ct = `0x${Buffer.from(JSON.stringify(structuredData), 'utf8').toString('hex')}`;
+//     // Send request to MetaMask to decrypt the ciphertext
+//     // Once again application must have acces to the account
+//     const decrypt = await window.ethereum.request({
+//       method: 'eth_decrypt',
+//       params: [ct, account],
+//     });
+//     // Decode the base85 to final bytes
+//     return ascii85.decode(decrypt);
+//   }
 
-  serialize(downloadAppList){
-    // 🤓
-    const count = downloadAppList.length;
-    let userApps = "";
-    console.log("Num of apps: " + count);
-    for (var i = 0; i < count; i++) {
-      userApps = userApps.concat(downloadAppList[i].id.toString(), this.intToChar());
-    }
-    userApps = userApps.concat(this.intToChar(), this.intToChar(), this.intToChar(), this.intToChar(), this.intToChar());
-    console.log("Serialized array before encryption: " + userApps);
-    //encrypt
-    return userApps;
-  }
+//   serialize(downloadAppList){
+//     // 🤓
+//     const count = downloadAppList.length;
+//     let userApps = "";
+//     console.log("Num of apps: " + count);
+//     for (var i = 0; i < count; i++) {
+//       userApps = userApps.concat(downloadAppList[i].id.toString(), this.intToChar());
+//     }
+//     userApps = userApps.concat(this.intToChar(), this.intToChar(), this.intToChar(), this.intToChar(), this.intToChar());
+//     console.log("Serialized array before encryption: " + userApps);
+//     //encrypt
+//     return userApps;
+//   }
 
-  async deserialize(decryptedString){
-    //decrypt
-    let stuff = decryptedString
-    let start=0;
-    let end=0;
-    let things = []
-    while(stuff.charCodeAt(start)<='9'.charCodeAt(0) && stuff.charCodeAt(start)>='0'.charCodeAt(0)){
-      if(stuff.charCodeAt(end)<='9'.charCodeAt(0) && stuff.charCodeAt(end)>='0'.charCodeAt(0)){
-        end++;
-        continue;
-      }
-      let temp = parseInt(stuff.substring(start, end));
-   //   let temp2 = await this.state.appStoreContract.methods.apps(temp).call();
-      let temp2= this.state.apps[temp-1];
-      things.push(temp2);
-      start = end + 1
-      end = end + 1
-    }
+//   async deserialize(decryptedString){
+//     //decrypt
+//     let stuff = decryptedString
+//     let start=0;
+//     let end=0;
+//     let things = []
+//     while(stuff.charCodeAt(start)<='9'.charCodeAt(0) && stuff.charCodeAt(start)>='0'.charCodeAt(0)){
+//       if(stuff.charCodeAt(end)<='9'.charCodeAt(0) && stuff.charCodeAt(end)>='0'.charCodeAt(0)){
+//         end++;
+//         continue;
+//       }
+//       let temp = parseInt(stuff.substring(start, end));
+//    //   let temp2 = await this.state.appStoreContract.methods.apps(temp).call();
+//       let temp2= this.state.apps[temp-1];
+//       things.push(temp2);
+//       start = end + 1
+//       end = end + 1
+//     }
 
-    for(var j=0; j<things.length; j++){
-      console.log("apps[" + j.toString() + "]: " + things[j].toString());
-    }
+//     for(var j=0; j<things.length; j++){
+//       console.log("apps[" + j.toString() + "]: " + things[j].toString());
+//     }
 
-    return things;
-  }
+//     return things;
+//   }
 
-  async initDownloadList(contract){
-    console.log('** Fetching Downloaded App List **');
+//   async initDownloadList(contract){
+//     console.log('** Fetching Downloaded App List **');
 
-    //Load download code string from blockchain and convert to buffer
-    let dCodeStr = await contract.methods.getDownloadCode(this.state.account).call();
-    let dCodeBuffer = Buffer.from(JSON.parse(dCodeStr).data);
+//     //Load download code string from blockchain and convert to buffer
+//     let dCodeStr = await contract.methods.getDownloadCode(this.state.account).call();
+//     let dCodeBuffer = Buffer.from(JSON.parse(dCodeStr).data);
 
-    console.log("Encrypted String: " + dCodeStr)
+//     console.log("Encrypted String: " + dCodeStr)
 
-    //Decrypt download code and convert to string
-    let decryptedBuffer = await this.decryptData(this.state.account, dCodeBuffer);
-    let decryptedString = decryptedBuffer.toString();
+//     //Decrypt download code and convert to string
+//     let decryptedBuffer = await this.decryptData(this.state.account, dCodeBuffer);
+//     let decryptedString = decryptedBuffer.toString();
 
-    console.log("Decrypted string: " + decryptedString);
+//     console.log("Decrypted string: " + decryptedString);
 
-    //Build downloadedApps array
-    let appArr = await this.deserialize(decryptedString);
-  //  const reviews = await contract.methods.getReviews(appArr.id).call();
-   // appArr.reviews=reviews;
+//     //Build downloadedApps array
+//     let appArr = await this.deserialize(decryptedString);
+//   //  const reviews = await contract.methods.getReviews(appArr.id).call();
+//    // appArr.reviews=reviews;
 
-    this.setState({
-      downloadedApps : appArr
-    });
+//     this.setState({
+//       downloadedApps : appArr
+//     });
 
-    console.log('** End **');
-  }
+//     console.log('** End **');
+//   }
 
-  async getUpdatedDownloadCode(appId){
-    console.log("--Generating new download code after adding app with Id: " + appId + "--");
-
-
-    //Add app to downloadedAppsArray
-//    const newApp = await this.state.appStoreContract.methods.apps(appId).call();
+//   async getUpdatedDownloadCode(appId){
+//     console.log("--Generating new download code after adding app with Id: " + appId + "--");
 
 
-    let newApp= this.state.apps[appId-1]; 
-    let updatedList = [...this.state.downloadedApps, newApp];
-  //  this.setState(oldState=>({
-    //   downloadedApps : updatedList
-  //  }));
+//     //Add app to downloadedAppsArray
+// //    const newApp = await this.state.appStoreContract.methods.apps(appId).call();
 
 
-    //Serialize
-    let serialized = this.serialize(updatedList);
-    let buffer = Buffer.from(serialized, "utf-8");
+//     let newApp= this.state.apps[appId-1]; 
+//     let updatedList = [...this.state.purchasedApps, newApp];
+//   //  this.setState(oldState=>({
+//     //   downloadedApps : updatedList
+//   //  }));
 
-    //Fetch public key, request it if it's not in state
-    let pubKey = this.state.publicKey;
-    if(pubKey==''){
-      // Key is returned as base64
-      const keyB64 = await window.ethereum.request({
-        method: 'eth_getEncryptionPublicKey',
-        params: [this.state.account],
-      });
-      console.log('key64',keyB64)
-      pubKey = Buffer.from(keyB64, 'base64')
-      this.setState({
-        publicKey : pubKey
-      });
-    }
-    console.log("Public Key: " + pubKey);
 
-    //Encrypt
-    let encryptedBuffer = this.encryptData(pubKey, buffer);
-    let encryptedString = JSON.stringify(encryptedBuffer);
+//     //Serialize
+//     let serialized = this.serialize(updatedList);
+//     let buffer = Buffer.from(serialized, "utf-8");
+
+//     //Fetch public key, request it if it's not in state
+//     let pubKey = this.state.publicKey;
+//     if(pubKey==''){
+//       // Key is returned as base64
+//       const keyB64 = await window.ethereum.request({
+//         method: 'eth_getEncryptionPublicKey',
+//         params: [this.state.account],
+//       });
+//       console.log('key64',keyB64)
+//       pubKey = Buffer.from(keyB64, 'base64')
+//       this.setState({
+//         publicKey : pubKey
+//       });
+//     }
+//     console.log("Public Key: " + pubKey);
+
+//     //Encrypt
+//     let encryptedBuffer = this.encryptData(pubKey, buffer);
+//     let encryptedString = JSON.stringify(encryptedBuffer);
     
-    console.log("Generated encryptedString: " + encryptedString);
-    console.log("--End--");
+//     console.log("Generated encryptedString: " + encryptedString);
+//     console.log("--End--");
 
-    return encryptedString;
-  }
+//     return encryptedString;
+//   }
 
-  generateInitialEncrypedString = async () =>{
-    console.log("Generating initial encrypted string");
+//   generateInitialEncrypedString = async () =>{
+//     console.log("Generating initial encrypted string");
 
-    //Serialize
-    let serialized = this.serialize([]);
-    let buffer = Buffer.from(serialized, "utf-8");
+//     //Serialize
+//     let serialized = this.serialize([]);
+//     let buffer = Buffer.from(serialized, "utf-8");
 
-    //Fetch public key, request it if it's not in state
-    let pubKey = this.state.publicKey;
-    if(pubKey==''){
-      // Key is returned as base64
-      const keyB64 = await window.ethereum.request({
-        method: 'eth_getEncryptionPublicKey',
-        params: [this.state.account],
-      });
+//     //Fetch public key, request it if it's not in state
+//     let pubKey = this.state.publicKey;
+//     if(pubKey==''){
+//       // Key is returned as base64
+//       const keyB64 = await window.ethereum.request({
+//         method: 'eth_getEncryptionPublicKey',
+//         params: [this.state.account],
+//       });
 
-      pubKey = Buffer.from(keyB64, 'base64')
-      this.setState({
-        publicKey : pubKey
-      });
-    }
-    console.log("Public Key: " + pubKey);
+//       pubKey = Buffer.from(keyB64, 'base64')
+//       this.setState({
+//         publicKey : pubKey
+//       });
+//     }
+//     console.log("Public Key: " + pubKey);
 
-    //Encrypt
-    let encryptedBuffer = this.encryptData(pubKey, buffer);
-    let encryptedString = JSON.stringify(encryptedBuffer);
+//     //Encrypt
+//     let encryptedBuffer = this.encryptData(pubKey, buffer);
+//     let encryptedString = JSON.stringify(encryptedBuffer);
 
-    return encryptedString;
-  }
+//     return encryptedString;
+//   }
 }
 
 export default App;

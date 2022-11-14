@@ -5,6 +5,7 @@ pragma experimental ABIEncoderV2;
 contract AppStore {
 
   mapping(uint => AppData) public apps;
+  mapping(uint  => string) public appsFilesHashes;
   mapping(address  => UserData) public userDictionary;
   uint public appsCount = 0; 
 
@@ -13,6 +14,7 @@ contract AppStore {
     string userName;
     string downloadCode;
     uint[] uploadedApps;
+    uint[] purchasedApps;
   }
 
   struct AppData {
@@ -23,7 +25,6 @@ contract AppStore {
     string appDeveloper;
     address developerAddress;
     string appLogoHash;
-    string appFileHash;
     string price;
     string priceCurrency;
     ReviewAndRating [] reviews;
@@ -46,11 +47,11 @@ contract AppStore {
     apps[appsCount].category=_category;
     apps[appsCount].appDescription=_appDescription;
     apps[appsCount].appLogoHash=_appLogoHash;
-    apps[appsCount].appFileHash=_appFileHash;
     apps[appsCount].appDeveloper=userDictionary[msg.sender].userName;
     apps[appsCount].price=_price;
     apps[appsCount].priceCurrency=_priceCurrency;
     apps[appsCount].developerAddress=msg.sender;
+    appsFilesHashes[appsCount]=_appFileHash;
     userDictionary[msg.sender].uploadedApps.push(appsCount);
   }
 
@@ -69,9 +70,27 @@ contract AppStore {
     for (uint i = 0; i < apps[_appid].reviews.length; i++) {
         require(apps[_appid].reviews[i].evaluaterAddress!=msg.sender,'you can review this app only once!');
     }
+    bool appPurchased=false;
+    for (uint i = 0; i < userDictionary[msg.sender].purchasedApps.length; i++) {
+      if(userDictionary[msg.sender].purchasedApps[i]==_appid){
+        appPurchased=true;
+        break;
+      }
+    }
+    require(appPurchased==true,'you cannot review an app you didnt purchase!');
     ReviewAndRating memory NewReview=ReviewAndRating(isAnonymous?'Anonymous':userDictionary[msg.sender].userName, msg.sender, _rating, _review);
     apps[_appid].reviews.push(NewReview);
   }
+
+
+  function purchaseApp(uint _appid)public{
+      userDictionary[msg.sender].purchasedApps.push(_appid);
+  }
+
+
+  function getAppHash(uint _appid)public view returns(string memory){
+    return appsFilesHashes[_appid];
+  } 
 
 
   function isNewUser(address _user)public view returns(bool){
@@ -89,6 +108,11 @@ contract AppStore {
   }
 
 
+  function getPurchasedApps(address _user) public view returns(uint[] memory){
+    return userDictionary[_user].purchasedApps;
+  }
+
+
   function getDownloadCode(address _user) public view returns(string memory){
     return userDictionary[_user].downloadCode;
   }
@@ -96,11 +120,6 @@ contract AppStore {
 
   function getReviews(uint appid) public view returns(ReviewAndRating [] memory ){
     return apps[appid].reviews;
-  }
-
-
-  function updateDownloadCode(string memory newCode) public {
-    userDictionary[msg.sender].downloadCode = newCode;
   }
 
 }

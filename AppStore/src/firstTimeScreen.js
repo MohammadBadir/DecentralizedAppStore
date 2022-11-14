@@ -52,6 +52,7 @@ class FirstTimeScreen extends React.Component{
                 alert(userNameNotEmpty);
               }else if(err.message.includes('User denied transaction')){
               }else{
+                console.log(err)
                 alert('an error occured')
               }
             }

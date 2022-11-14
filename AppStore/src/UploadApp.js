@@ -83,8 +83,8 @@ class UploadApp extends React.Component{
               </label>
               <div className='containerSbmtBtn'>
                 
-                <button class="submitAppBtn" onClick={this.addNewApp}>
-                  <span class="SbmtBtntext">Submit</span>
+                <button className="submitAppBtn" onClick={this.addNewApp}>
+                  <span className="SbmtBtntext">Submit</span>
                        </button>              </div>
               <div style={{height:"20px"}}></div>
             </form>

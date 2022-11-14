@@ -144,18 +144,24 @@ class AppPage extends React.Component{
         const buttonElement=document.getElementById('download '+event.target.dataset.appid);
         spanElement.innerHTML ='downloading...';
         buttonElement.parentNode.replaceChild (spanElement,buttonElement);
+        let appHash
         try{
-            await this.props.downloadApp(event.target.dataset.appid)
-        }catch(err){
+            await this.props.contract.methods.purchaseApp(event.target.dataset.appid).send({from : this.props.currentAccount});
+            appHash=await this.props.contract.methods.getAppHash(event.target.dataset.appid).call();
+            if(!this.props.purchasedApps.map((app)=>app.id).includes(event.target.dataset.appid) && !this.props.isMyApp){ // to avoid duplicates 
+                this.props.downloadApp();
+            }
+            spanElement.innerHTML ='';
+            spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
+            window.open(`https://ipfs.io/ipfs/${appHash}`, '_blank');
+
+        }catch(err){ // to handle errors and not enough ether etc... 
             console.log(err)
             spanElement.innerHTML ='';
             spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
             return;
         }
-        spanElement.innerHTML ='';
-        spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
      //   if (window.confirm('Press Ok to Confirm')){
-            window.open(`https://ipfs.io/ipfs/${this.props.app.appFileHash}`, '_blank');
   //      };
     //    setTimeout(function(){
      //     alert('app has been downloaded successfully')
