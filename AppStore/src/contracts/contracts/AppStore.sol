@@ -25,7 +25,7 @@ contract AppStore {
     string appDeveloper;
     address developerAddress;
     string appLogoHash;
-    uint price;
+    uint256 price;
     string priceCurrency;
     ReviewAndRating [] reviews;
   }
@@ -37,7 +37,7 @@ contract AppStore {
     string review;
   }
 
-  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint _price,string memory _priceCurrency, string memory _appLogoHash,string memory _appFileHash) public payable {
+  function createApp(string memory _appName,string memory _category,string memory _appDescription,uint256 _price,string memory _priceCurrency, string memory _appLogoHash,string memory _appFileHash) public payable {
     for (uint i = 0; i < userDictionary[msg.sender].uploadedApps.length; i++) {
       require(keccak256(bytes(apps[userDictionary[msg.sender].uploadedApps[i]].appName))!=keccak256(bytes(_appName)),'you already published an app with this name!');
     }

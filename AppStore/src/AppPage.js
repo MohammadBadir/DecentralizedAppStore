@@ -58,7 +58,7 @@ class AppPage extends React.Component{
                                 Price
                             </b>
                             <br></br>
-                            {this.props.app.priceCurrency=='USD'? ('$'+parseFloat(parseFloat(this.props.app.price).toFixed(3)) + ' ≈ '+parseFloat(parseFloat(this.props.app.price/this.props.conversionRate).toFixed(3))+'ETH') : (parseFloat(parseFloat(this.props.app.price).toFixed(3))+'ETH ≈ $'+parseFloat(parseFloat(this.props.app.price*this.props.conversionRate).toFixed(3))) } 
+                            {this.props.app.priceCurrency=='USD'? ('$'+parseFloat(parseFloat(this.props.app.price).toFixed(3)) + ' ≈ '+parseFloat(parseFloat(this.props.app.price/this.props.conversionRate).toFixed(3))+'ETH') : (parseFloat(parseFloat(this.props.app.price/1000000000).toFixed(3))+'ETH ≈ $'+parseFloat(parseFloat(this.props.app.price*this.props.conversionRate/1000000000).toFixed(3))) } 
                         </div>
                         <hr/>
 
@@ -146,7 +146,7 @@ class AppPage extends React.Component{
         buttonElement.parentNode.replaceChild (spanElement,buttonElement);
         let appHash
         try{
-            await this.props.contract.methods.purchaseApp(event.target.dataset.appid).send({from : this.props.currentAccount,value: 1});
+            await this.props.contract.methods.purchaseApp(event.target.dataset.appid).send({from : this.props.currentAccount,value: 1000000000});
             appHash=await this.props.contract.methods.getAppHash(event.target.dataset.appid).call();
             if(!this.props.purchasedApps.map((app)=>app.id).includes(event.target.dataset.appid) && !this.props.isMyApp){ // to avoid duplicates 
                 this.props.downloadApp();

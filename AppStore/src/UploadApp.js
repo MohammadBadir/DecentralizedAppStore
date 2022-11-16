@@ -19,7 +19,7 @@ class UploadApp extends React.Component{
       appDescriptionInput : "",
       appNameEmpty : false,
       priceNegative: false,
-      appPriceInput: '0',
+      appPriceInput: 0,
       convertedValue:'',
       appLogoBuffer: null,
       appFileBuffer: null,
@@ -167,7 +167,7 @@ class UploadApp extends React.Component{
       document.querySelector(".submitAppBtn").disabled=true;
       try{
         await this.uploadFilesToIpfs()
-        await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,this.state.appPriceInput,this.state.selectedCurrency,appLogoHash,appFileHash)
+        await this.props.addNewApp(this.state.appNameInput,this.state.categoryInput,this.state.appDescriptionInput,(this.state.selectedCurrency=="ETH")?this.state.appPriceInput*1000000000:this.state.appPriceInput,this.state.selectedCurrency,appLogoHash,appFileHash)
       }catch(err){
         const appWithSameNameExist='you already published an app with this name!';
         if(err=='No file to upload'){
