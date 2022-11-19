@@ -103,7 +103,7 @@ class AppPage extends React.Component{
 
                             <div style={{marginBottom:'-5px'}}> 
                                 <input style={{marginRight:'7px'}} type="checkbox" id='anonymousCheckbox' ></input>
-                                <label htmlFor="anonymousCheckbox">Post Anonymously</label>
+                                <label htmlFor="anonymousCheckbox">Post Without Name</label>
                             </div>
                             
                             <button onClick={this.addReview}>Submit</button>
@@ -146,7 +146,7 @@ class AppPage extends React.Component{
         buttonElement.parentNode.replaceChild (spanElement,buttonElement);
         let appHash
         try{
-            await this.props.contract.methods.purchaseApp(event.target.dataset.appid).send({from : this.props.currentAccount,value: 1000000000});
+            await this.props.contract.methods.purchaseApp(event.target.dataset.appid).send({from : this.props.currentAccount,value: this.props.app.price/(this.props.app.priceCurrency=='USD'?1000000000:1)});
             appHash=await this.props.contract.methods.getAppHash(event.target.dataset.appid).call();
             if(!this.props.purchasedApps.map((app)=>app.id).includes(event.target.dataset.appid) && !this.props.isMyApp){ // to avoid duplicates 
                 this.props.downloadApp();
@@ -157,7 +157,11 @@ class AppPage extends React.Component{
             window.location.reload();
 
         }catch(err){ // to handle errors and not enough ether etc... 
-            console.log(err)
+            if(err.message.includes("Not enough money")){
+                alert("Not Enough Money!")
+            } else {
+                alert("An Error has occured")
+            }
             spanElement.innerHTML ='';
             spanElement.parentNode.insertBefore(buttonElement,spanElement.nextSibling);
             return;
