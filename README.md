@@ -1,4 +1,4 @@
-*Prerequisites*
+**Prerequisites**
 
 Ganache - Version 2.5.4
 Metamask – Version 10.21.2
@@ -8,7 +8,7 @@ Npm – Version 8.12.1
 
 Recommended IDE: VSCode
 
-*Frontend*
+**Frontend**
 
 Our frontend uses the React.js framework, implementing a webpage that uses the smart contract to present a user interface of an Appstore.
 
@@ -46,7 +46,7 @@ Config.js:
 Contains the contract address abi – required for connecting web3 to the smart contract.
 
 
-*Smart Contract*
+**Smart Contract**
 
 Our contract includes the following basic structures:
 
